@@ -2,6 +2,9 @@ from textual.app import App, ComposeResult
 from textual.widget import Widget
 from textual.widgets import Input, Static
 from textual.containers import Center, Middle
+from textual.timer import Timer
+from textual.events import Timer as TimerEvent
+from textual import on
 
 class AsciiImage(Static):
     """A class that loads a string of characters that can appear like an image."""
@@ -37,9 +40,12 @@ class PageWrapper(Static):
         yield Static("Enter your name and email address to stay up to date with Cornell College Computer Science happenings!")
         self.name_input = Input(placeholder="Name", id="name")
         self.email_input = Input(placeholder="Email address (@cornellcollege.edu)", id="email")
+        self.thanks = Static("Placeholder text", id="thankyou")
+        self.timer = Timer(self, 5.0, repeat=1)
 
         yield self.name_input
         yield self.email_input
+        yield self.thanks
 
     def on_input_submitted(self, message: Input.Submitted):
         if message.control == self.name_input:
@@ -49,11 +55,21 @@ class PageWrapper(Static):
         if message.control != self.email_input:
             return
 
+        first_name = self.name_input.value.split(" ")[0]
+
         with open('tabling_names.csv', 'a') as file:
             file.write(f"{self.name_input.value}, {self.email_input.value}\n")
             self.name_input.value = ""
             self.email_input.value = ""
             self.name_input.focus()
+
+        self.timer.reset()
+        self.thanks.update(f"Thanks for signing up, {first_name}!")
+        self.timer.resume()
+        
+    @on(TimerEvent)
+    def clear_text(self):
+        self.thanks.update("")
 
 
 class TablingApp(App):
