@@ -35,28 +35,31 @@ class PageWrapper(Static):
     def compose(self) -> ComposeResult:
         yield C4Logo()
         yield Static("Enter your name and email address to stay up to date with Cornell College Computer Science happenings!")
-        yield Input(placeholder="Name", id="name")
-        yield Input(placeholder="Email address (@cornellcollege.edu)", id="email")
+        self.name_input = Input(placeholder="Name", id="name")
+        self.email_input = Input(placeholder="Email address (@cornellcollege.edu)", id="email")
+
+        yield self.name_input
+        yield self.email_input
+
+    def on_input_submitted(self, message: Input.Submitted):
+        if message.control == self.name_input:
+            self.email_input.focus()
+            return
+
+        if message.control != self.email_input:
+            return
+
+        with open('tabling_names.csv', 'a') as file:
+            file.write(f"{self.name_input.value}, {self.email_input.value}\n")
+            self.name_input.value = ""
+            self.email_input.value = ""
+            self.name_input.focus()
+
 
 class TablingApp(App):
     """Displays the tabling app."""
 
-    CSS_PATH = "textual_attempt.css"
-
-    def on_input_submitted(self, message: Input.Submitted):
-        if message.control.id == "name":
-            self.query_one("#email").focus()
-            return
-
-        if message.control.id != "email":
-            return
-
-        with open('tabling_names.csv', 'a') as file:
-            file.write(f"{self.query_one('#name').value}, {message.control.value}\n")
-            self.query_one("#name").value = ""
-            message.control.value = ""
-        
-        
+    CSS_PATH = "textual_attempt.css"        
 
     def compose(self) -> ComposeResult:
         with Middle(id="MainContainer"):

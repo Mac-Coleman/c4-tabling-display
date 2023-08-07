@@ -1,3 +1,7 @@
+Screen {
+	background: #000;
+}
+
 #MainContainer {
 	background: #000;
 	height: 100%;
@@ -14,7 +18,7 @@ AsciiImage {
 
 C4Logo {
 	layout: horizontal;
-	margin: 2 8;
+	margin: 0 8;
 	align: center top;
 }
 
