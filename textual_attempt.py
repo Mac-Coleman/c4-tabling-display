@@ -1,8 +1,10 @@
 from textual.app import App, ComposeResult
 from textual.widget import Widget
 from textual.widgets import Input, Static
+from textual.containers import Center, Middle
 
 class AsciiImage(Static):
+    """A class that loads a string of characters that can appear like an image."""
 
     def __init__(self, image_file: str, fg_color: str, bg_color: str):
         super().__init__()
@@ -24,15 +26,22 @@ class AsciiImage(Static):
 class C4Logo(Static):
 
     def compose(self) -> ComposeResult:
-        yield AsciiImage("assets/logo_small/less_than.txt", "white", "#0000") #RGBA, 0 alpha
-        yield AsciiImage("assets/logo_small/c4.txt", "purple", "#0000")
-        yield AsciiImage("assets/logo_small/greater_than.txt", "white", "#0000")
-        
+        yield AsciiImage("assets/logo_small/less_than.txt", "white", "rgba(0,0,0,0)") #RGBA, 0 alpha
+        yield AsciiImage("assets/logo_small/c4.txt", "purple", "rgba(0,0,0,0)")
+        yield AsciiImage("assets/logo_small/greater_than.txt", "white", "rgba(0,0,0,0)")
+
+class PageWrapper(Static):
+
+    def compose(self) -> ComposeResult:
+        yield C4Logo()
+        yield Static("Enter your name and email address to stay up to date with Cornell College Computer Science happenings!")
+        yield Input(placeholder="Name", id="name")
+        yield Input(placeholder="Email address (@cornellcollege.edu)", id="email")
 
 class TablingApp(App):
-    """Displays a pride flag."""
+    """Displays the tabling app."""
 
-    COLORS = ["red", "orange", "yellow", "green", "blue", "purple"]
+    CSS_PATH = "textual_attempt.css"
 
     def on_input_submitted(self, message: Input.Submitted):
         if message.control.id == "name":
@@ -50,13 +59,9 @@ class TablingApp(App):
         
 
     def compose(self) -> ComposeResult:
-        logo = C4Logo()
-        logo.styles.layout = "horizontal"
-        logo.styles.margin = 4, 2
-        logo.styles.alignment = "center middle"
-        yield logo
-        yield Input(placeholder="Name", id="name")
-        yield Input(placeholder="Email address (@cornellcollege.edu)", id="email")
+        with Middle(id="MainContainer"):
+            with Center():
+                yield PageWrapper()
 
 if __name__ == "__main__":
     TablingApp().run()

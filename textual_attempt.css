@@ -1,3 +1,26 @@
-AsciiLogoImage {
+#MainContainer {
+	background: #000;
+	height: 100%;
+	width: 100%;
+}
+
+Input {
+	margin: 2 0;
+}
+
+AsciiImage {
+	text-style: bold;
+}
+
+C4Logo {
+	layout: horizontal;
+	margin: 2 8;
+	align: center top;
+}
+
+PageWrapper {
+	layout: vertical;
+	max-width: 60;
 	align: center middle;
+	border: white hkey;
 }
