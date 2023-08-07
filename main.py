@@ -59,7 +59,7 @@ class PageWrapper(Static):
 class TablingApp(App):
     """Displays the tabling app."""
 
-    CSS_PATH = "textual_attempt.css"        
+    CSS_PATH = "main.css"        
 
     def compose(self) -> ComposeResult:
         with Middle(id="MainContainer"):
