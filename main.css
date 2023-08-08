@@ -1,6 +1,6 @@
 Screen {
 	background: $primary-background-darken-2;
-	align: center middle;
+	/* align: center middle; */
 	border: round #BB66FF;
 }
 
@@ -10,12 +10,21 @@ Input {
 
 Static.Status {
 	margin: 1 4;
+	color: white;
 	text-align: center;
 }
 
 Static.Prompt {
 	margin: 1 4;
+	color: white;
 	text-align: justify;
+}
+
+Static.Background {
+	align: center middle;
+	color: $primary-darken-1;
+	height: 1fr;
+	width: 1fr;
 }
 
 AsciiImage {

@@ -1,6 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.widget import Widget
 from textual.widgets import Input, Static
+import random
 
 class AsciiImage(Static):
     """A class that loads a string of characters that can appear like an image."""
@@ -76,7 +77,11 @@ class TablingApp(App):
     CSS_PATH = "main.css"        
 
     def compose(self) -> ComposeResult:
-        yield PageWrapper()
+        with Static("", classes="Background") as b:
+            numbers = 5000
+            l = " ".join(["{:02X}".format(random.randint(0,255)) for x in range(numbers)])
+            b.update(l)
+            yield PageWrapper()
 
 if __name__ == "__main__":
     TablingApp().run()
