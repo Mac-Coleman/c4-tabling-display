@@ -1,6 +1,7 @@
 Screen {
-	background: $primary-background;
+	background: $primary-background-darken-2;
 	align: center middle;
+	border: round #BB66FF;
 }
 
 Input {
@@ -32,5 +33,5 @@ PageWrapper {
 	max-width: 70;
 	align: center middle;
 	border: white hkey;
-	background: $primary-background-darken-2;
+	background: $primary-background-darken-1;
 }
