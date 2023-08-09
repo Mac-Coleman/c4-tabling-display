@@ -1,7 +1,7 @@
 # C4 Tabling App
 
 ![A screenshot of the tabling app, with C4 logo and text entry fields.](assets/screenshot.png)
-This app is a small program to attract new members to the Cornell College Computing Clubi (C4).
+This app is a small program to attract new members to the Cornell College Computing Club (C4).
 The app relies on the python module `textual` which can be found [here](https://github.com/Textualize/textual).
 
 It displays an ASCII art version of the C4 logo in the Cornell College colors, and it has two text inputs with which student names and emails can be collected.
