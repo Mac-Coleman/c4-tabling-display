@@ -1,6 +1,6 @@
 Screen {
 	background: $primary-background-darken-2;
-	/* align: center middle; */
+	align: center middle;
 	border: round #BB66FF;
 }
 
@@ -27,6 +27,19 @@ Static.Background {
 	width: 1fr;
 }
 
+Static.SwitcherContainer {
+	align: center middle;
+	layout: vertical;
+	background: #f00;
+	width: 30%;
+	height: 80%;
+}
+
+ContentSwitcher.MenuHolder {
+	align: center middle;
+	background: #00f0;
+}
+
 AsciiImage {
 	text-style: bold;
 }
@@ -37,9 +50,8 @@ C4Logo {
 	align: center top;
 }
 
-PageWrapper {
+SignupMenu {
 	layout: vertical;
-	max-width: 70;
 	align: center middle;
 	border: white hkey;
 	background: $primary-background-darken-1;

@@ -1,6 +1,7 @@
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.widget import Widget
-from textual.widgets import Input, Static
+from textual.widgets import Input, Static, ContentSwitcher
 import random
 
 class AsciiImage(Static):
@@ -33,7 +34,7 @@ class C4Logo(Static):
         yield AsciiImage("assets/logo_small/c4.txt", "#BB66FF")
         yield AsciiImage("assets/logo_small/greater_than.txt", "white")
 
-class PageWrapper(Static):
+class SignupMenu(Static):
 
     def compose(self) -> ComposeResult:
         yield C4Logo()
@@ -70,18 +71,43 @@ class PageWrapper(Static):
     def clear_text(self):
         self.thanks.update("")
 
+class QrCodeDisplay(Static):
+
+    def compose(self) -> ComposeResult:
+        yield C4Logo() # placeholder
+
 
 class TablingApp(App):
     """Displays the tabling app."""
 
-    CSS_PATH = "main.css"        
+    CSS_PATH = "main.css"
+
+    BINDINGS = [
+        Binding("escape", "switch_qr_code_display()", 'display_qr_code', show=False, priority=True),
+    ]
+
 
     def compose(self) -> ComposeResult:
+        
+        self.qr_code = False
         with Static("", classes="Background") as b:
             numbers = 5000
             l = " ".join(["{:02X}".format(random.randint(0,255)) for x in range(numbers)])
             b.update(l)
-            yield PageWrapper()
+            with Static(classes="SwitcherContainer"):
+                with ContentSwitcher(initial="signup-menu", id="MenuHolder", classes="MenuHolder"):
+                    yield SignupMenu(id="signup-menu")
+                    yield QrCodeDisplay(id="qr-code")
+
+    def action_switch_qr_code_display(self, params=None):
+        if self.qr_code:
+            self.query_one("#MenuHolder").current = "signup-menu"
+        else:
+            self.query_one("#MenuHolder").current = "qr-code"
+
+        self.qr_code = not self.qr_code
+
+
 
 if __name__ == "__main__":
     TablingApp().run()
