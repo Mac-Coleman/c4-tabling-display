@@ -22,7 +22,7 @@ Static.Prompt {
 
 Static.Background {
 	align: center middle;
-	color: $primary-darken-1;
+	color: #320045;
 	height: 1fr;
 	width: 1fr;
 }
