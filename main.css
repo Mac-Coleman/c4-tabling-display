@@ -36,14 +36,15 @@ ContentSwitcher.MenuHolder {
 
 AsciiImage {
 	text-style: bold;
+	align: center middle;
 }
 
 C4Logo {
 	layout: horizontal;
-	margin: 0 8;
+	align: center middle;
+	margin: 1 0;
 	height: auto;
 	width: auto;
-	align: center top;
 }
 
 SignupMenu {
