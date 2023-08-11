@@ -27,16 +27,10 @@ Static.Background {
 	width: 1fr;
 }
 
-Static.SwitcherContainer {
-	align: center middle;
-	layout: vertical;
-	background: #f00;
-	width: 30%;
-	height: 80%;
-}
-
 ContentSwitcher.MenuHolder {
 	align: center middle;
+	height: auto;
+	width: auto;
 	background: #00f0;
 }
 
@@ -47,6 +41,8 @@ AsciiImage {
 C4Logo {
 	layout: horizontal;
 	margin: 0 8;
+	height: auto;
+	width: auto;
 	align: center top;
 }
 
@@ -54,5 +50,15 @@ SignupMenu {
 	layout: vertical;
 	align: center middle;
 	border: white hkey;
+	width: 75;
+	background: $primary-background-darken-1;
+}
+
+QrCodeMenu {
+	layout: vertical;
+	align: center middle;
+	border: white hkey;
+	height: auto;
+	width: auto;
 	background: $primary-background-darken-1;
 }

@@ -71,11 +71,11 @@ class SignupMenu(Static):
     def clear_text(self):
         self.thanks.update("")
 
-class QrCodeDisplay(Static):
+class QrCodeMenu(Static):
 
     def compose(self) -> ComposeResult:
-        yield C4Logo() # placeholder
-
+        yield C4Logo()
+        yield Static("Scan the above QR code to join our discord.", classes="Prompt")
 
 class TablingApp(App):
     """Displays the tabling app."""
@@ -94,16 +94,15 @@ class TablingApp(App):
             numbers = 5000
             l = " ".join(["{:02X}".format(random.randint(0,255)) for x in range(numbers)])
             b.update(l)
-            with Static(classes="SwitcherContainer"):
-                with ContentSwitcher(initial="signup-menu", id="MenuHolder", classes="MenuHolder"):
-                    yield SignupMenu(id="signup-menu")
-                    yield QrCodeDisplay(id="qr-code")
+            with ContentSwitcher(initial="signup", classes="MenuHolder"):
+                yield SignupMenu(id="signup")
+                yield QrCodeMenu(id="qr-code")
 
     def action_switch_qr_code_display(self, params=None):
         if self.qr_code:
-            self.query_one("#MenuHolder").current = "signup-menu"
+            self.query_one("ContentSwitcher.MenuHolder").current = "signup"
         else:
-            self.query_one("#MenuHolder").current = "qr-code"
+            self.query_one("ContentSwitcher.MenuHolder").current = "qr-code"
 
         self.qr_code = not self.qr_code
 
