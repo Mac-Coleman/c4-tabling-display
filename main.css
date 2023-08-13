@@ -40,6 +40,10 @@ AsciiImage {
 	align: center middle;
 }
 
+AsciiImage.QrCodeImage {
+	padding: 4 4 0 0;
+}
+
 C4Logo {
 	layout: horizontal;
 	align: center middle;
@@ -61,7 +65,7 @@ QrCodeMenu {
 	align: center middle;
 	border: white hkey;
 	height: auto;
-	width: auto;
+	width: 60;
 	padding: 1 4;
 	background: $primary-background-darken-1;
 }

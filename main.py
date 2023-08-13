@@ -11,7 +11,7 @@ class AsciiImage(Static):
     def __init__(self, image_file: str, fg_color: str, bg_color=None):
         super().__init__()
         ascii_text = open(image_file, "r").readlines()
-        width = max([len(line) for line in ascii_text])
+        width = max([len(line) for line in ascii_text]) - 1
 
         self.content = "".join(ascii_text)
         self.fg_color = fg_color
@@ -76,8 +76,16 @@ class SignupMenu(Static):
 class QrCodeMenu(Static):
 
     def compose(self) -> ComposeResult:
+        yield Static("[u][b][#BB66FF]Join the C4 Discord![/#BB66FF][/b][/u]", classes="Status")
         with Center():
-            yield C4Logo()
+            with Static() as s:
+                s.styles.background = "white"
+                s.styles.color = "black"
+                s.styles.padding = (2, 4)
+                s.styles.width = "auto"
+                s.styles.height = "auto"
+                s.styles.margin = (1, 0, 0, 0)
+                yield AsciiImage("assets/qr_code/qr_code.txt", "black", "white")
         yield Static("Scan the above QR code to join our discord server!", classes="Prompt")
 
 
