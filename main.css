@@ -5,19 +5,20 @@ Screen {
 }
 
 Input {
-	margin: 2 4;
+	margin: 1 0 0 0;
 }
 
 Static.Status {
-	margin: 1 4;
 	color: white;
+	margin: 1 0 0 0;
 	text-align: center;
 }
 
 Static.Prompt {
-	margin: 1 4;
 	color: white;
 	text-align: justify;
+	margin: 1 0 0 0;
+	padding: 0 1 0 1;
 }
 
 Static.Background {
@@ -42,7 +43,6 @@ AsciiImage {
 C4Logo {
 	layout: horizontal;
 	align: center middle;
-	margin: 1 0;
 	height: auto;
 	width: auto;
 }
@@ -51,7 +51,8 @@ SignupMenu {
 	layout: vertical;
 	align: center middle;
 	border: white hkey;
-	width: 75;
+	width: 60;
+	padding: 1 4;
 	background: $primary-background-darken-1;
 }
 
@@ -61,5 +62,6 @@ QrCodeMenu {
 	border: white hkey;
 	height: auto;
 	width: auto;
+	padding: 1 4;
 	background: $primary-background-darken-1;
 }

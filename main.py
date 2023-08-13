@@ -2,6 +2,7 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widget import Widget
 from textual.widgets import Input, Static, ContentSwitcher
+from textual.containers import Center
 import random
 
 class AsciiImage(Static):
@@ -37,7 +38,8 @@ class C4Logo(Static):
 class SignupMenu(Static):
 
     def compose(self) -> ComposeResult:
-        yield C4Logo()
+        with Center():
+            yield C4Logo()
         yield Static("Enter your [b][u]name[/u][/b] and [b][u]email address[/b][/u] to stay up to date with Cornell College Computer Science happenings!", classes="Prompt")
         self.name_input = Input(placeholder="Name", id="name")
         self.email_input = Input(placeholder="Email address (@cornellcollege.edu)", id="email")
@@ -74,8 +76,10 @@ class SignupMenu(Static):
 class QrCodeMenu(Static):
 
     def compose(self) -> ComposeResult:
-        yield C4Logo()
-        yield Static("Scan the above QR code to join our discord.", classes="Prompt")
+        with Center():
+            yield C4Logo()
+        yield Static("Scan the above QR code to join our discord server!", classes="Prompt")
+
 
 class TablingApp(App):
     """Displays the tabling app."""
