@@ -87,3 +87,14 @@ Static.Link {
 	width: auto;
 	align: center middle;
 }
+
+#link {
+	width: auto;
+	height: auto;
+	color: white;
+}
+
+#link-holder {
+	width: 10;
+	height: auto;
+}

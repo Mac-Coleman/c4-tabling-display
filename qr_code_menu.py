@@ -25,5 +25,5 @@ class QrCodeMenu(Static):
         with Middle():
             with Static(classes="QrCodeContainer"):
                 yield AsciiImage("assets/qr_code/qr_code.txt", "black", "white")
-            with Static(classes="Link"):
-                yield Label("LINK HERE")
+            with Center(id="link-holder"):
+                yield Label("LINK HERE", id="link")
