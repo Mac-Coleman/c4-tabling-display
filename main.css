@@ -47,6 +47,7 @@ AsciiImage.QrCodeImage {
 C4Logo {
 	layout: horizontal;
 	align: center middle;
+	margin: 1;
 	height: auto;
 	width: auto;
 }
@@ -61,11 +62,28 @@ SignupMenu {
 }
 
 QrCodeMenu {
-	layout: vertical;
-	align: center middle;
+	layout: horizontal;
 	border: white hkey;
 	height: auto;
-	width: 60;
+	width: 95;
 	padding: 1 4;
 	background: $primary-background-darken-1;
+}
+
+Static.QrCodeContainer {
+	width: auto;
+	height: auto;
+	background: white;
+	padding: 2 4;
+}
+
+Center.LeftBar {
+	padding: 0 4 0 0;
+}
+
+Static.Link {
+	color: white;
+	padding: 1;
+	width: auto;
+	align: center middle;
 }
