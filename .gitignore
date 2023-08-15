@@ -1,3 +1,4 @@
 # Do not track outputted CSV files.
 
 *.csv
+**/__pycache__

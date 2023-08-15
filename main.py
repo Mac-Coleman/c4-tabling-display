@@ -4,90 +4,10 @@ from textual.widget import Widget
 from textual.widgets import Input, Static, ContentSwitcher
 from textual.containers import Center
 import random
-
-class AsciiImage(Static):
-    """A class that loads a string of characters that can appear like an image."""
-
-    def __init__(self, image_file: str, fg_color: str, bg_color=None):
-        super().__init__()
-        ascii_text = open(image_file, "r").readlines()
-        width = max([len(line) for line in ascii_text]) - 1
-
-        self.content = "".join(ascii_text)
-        self.fg_color = fg_color
-        self.bg_color = bg_color
-        self.styles.max_width = width
-        self.styles.min_width = width
-        self.styles.max_height = len(ascii_text)
-        self.styles.min_height = len(ascii_text)
-
-    def compose(self) -> ComposeResult:
-        image = Static(self.content)
-        image.styles.color = self.fg_color
-        if self.bg_color:
-            image.styles.background = self.bg_color
-        yield image
-
-class C4Logo(Static):
-
-    def compose(self) -> ComposeResult:
-        yield AsciiImage("assets/logo_small/less_than.txt", "white") #RGBA, 0 alpha
-        yield AsciiImage("assets/logo_small/c4.txt", "#BB66FF")
-        yield AsciiImage("assets/logo_small/greater_than.txt", "white")
-
-class SignupMenu(Static):
-
-    def compose(self) -> ComposeResult:
-        with Center():
-            yield C4Logo()
-        yield Static("Enter your [b][u]name[/u][/b] and [b][u]email address[/b][/u] to stay up to date with Cornell College Computer Science happenings!", classes="Prompt")
-        self.name_input = Input(placeholder="Name", id="name")
-        self.email_input = Input(placeholder="Email address (@cornellcollege.edu)", id="email")
-        self.thanks = Static("", classes="Status")
-
-        yield self.name_input
-        yield self.email_input
-        yield self.thanks
-
-    def on_input_submitted(self, message: Input.Submitted):
-        if message.control == self.name_input:
-            self.email_input.focus()
-            return
-
-        if message.control != self.email_input:
-            return
-
-        first_name = self.name_input.value.split(" ")[0]
-
-        with open('tabling_names.csv', 'a') as file:
-            file.write(f"{self.name_input.value}, {self.email_input.value}\n")
-            self.name_input.value = ""
-            self.email_input.value = ""
-            self.name_input.focus()
-
-        self.thanks.styles.opacity = "100%"
-        self.set_timer(5.0, self.clear_text)
-        self.thanks.update(f"Thanks for signing up, [b][u][#BB66FF]{first_name}[/#BB66FF][/b][/u]!")
-        self.thanks.styles.animate("opacity", value=0.0, duration=1.0, delay=4.0)
-        
-    def clear_text(self):
-        self.thanks.update("")
-
-class QrCodeMenu(Static):
-
-    def compose(self) -> ComposeResult:
-        yield Static("[u][b][#BB66FF]Join the C4 Discord![/#BB66FF][/b][/u]", classes="Status")
-        with Center():
-            with Static() as s:
-                s.styles.background = "white"
-                s.styles.color = "black"
-                s.styles.padding = (2, 4)
-                s.styles.width = "auto"
-                s.styles.height = "auto"
-                s.styles.margin = (1, 0, 0, 0)
-                yield AsciiImage("assets/qr_code/qr_code.txt", "black", "white")
-        yield Static("Scan the above QR code to join our discord server!", classes="Prompt")
-
+from ascii_image import AsciiImage
+from logo import C4Logo
+from signup_menu import SignupMenu
+from qr_code_menu import QrCodeMenu
 
 class TablingApp(App):
     """Displays the tabling app."""
