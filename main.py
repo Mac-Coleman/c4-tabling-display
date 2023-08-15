@@ -80,6 +80,38 @@ if __name__ == "__main__":
                             file.write('  ')
                         
                     file.write('\n')
+            print("QR code successfully written.")
+            sys.exit(0)
+        
+        # Build upper and lower pairs
+        lines = []
+        for i in range(0, len(qr_code.matrix)-1, 2):
+            lines.append([])
+            for j in range(0, len(qr_code.matrix[0])):
+                lines[i//2].append((qr_code.matrix[i][j], qr_code.matrix[i+1][j]))
+        lines.append([])
+        for j in range(0, len(qr_code.matrix[1])):
+            lines[-1].append((qr_code.matrix[-1][j], 0))
+        
+        output = ""
+        for line in lines:
+            for couple in line:
+                match couple:
+                    case (0, 0):
+                        output += " "
+                    case (0, 1):
+                        output += "▄"
+                    case (1, 0):
+                        output += "▀"
+                    case (1, 1):
+                        output += "█"
+            output += "\n"
+        
+        with open('assets/qr_code/qr_code.txt', 'w') as file:
+            file.write(output)
+        
+        print("QR code successfully written.")
         sys.exit(0)
+
     
     TablingApp().run()
