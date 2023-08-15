@@ -56,6 +56,30 @@ if __name__ == "__main__":
     
     if argument_namespace.qr_code is not None:
         # Encode the data as a QR code and write it to assets/qr_code/qr_code.txt
+
+        try:
+            import segno
+        except ImportError as e:
+            print("Failed to import segno.")
+            print("Warning: package 'segno' is required to generate QR codes.")
+            print("Install it and try again.")
+            sys.exit(-1)
+
+        print(f"Encoding '{argument_namespace.qr_code}'...")
+
+        qr_code = segno.make(argument_namespace.qr_code)
+        qr_code.terminal()
+        
+        if qr_code.is_micro:
+            with open('assets/qr_code/qr_code.txt', 'w') as file:
+                for row in qr_code.matrix:
+                    for byte in row:
+                        if byte == 1:
+                            file.write('██')
+                        else:
+                            file.write('  ')
+                        
+                    file.write('\n')
         sys.exit(0)
     
     TablingApp().run()

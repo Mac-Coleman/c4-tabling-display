@@ -65,7 +65,7 @@ QrCodeMenu {
 	layout: horizontal;
 	border: white hkey;
 	height: auto;
-	width: 95;
+	min-width: 95;
 	padding: 1 4;
 	background: $primary-background-darken-1;
 }
