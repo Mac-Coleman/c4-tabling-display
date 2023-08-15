@@ -43,6 +43,49 @@ class TablingApp(App):
         self.qr_code = not self.qr_code
 
 
+def write_qr_code(data: str):
+    qr_code = segno.make(argument_namespace.qr_code)
+        
+    if qr_code.is_micro:
+        with open('assets/qr_code/qr_code.txt', 'w') as file:
+            for row in qr_code.matrix:
+                for byte in row:
+                    if byte == 1:
+                        file.write('██')
+                    else:
+                        file.write('  ')
+                    
+                file.write('\n')
+        return
+    
+    # Build upper and lower pairs
+    lines = []
+    for i in range(0, len(qr_code.matrix)-1, 2):
+        lines.append([])
+        for j in range(0, len(qr_code.matrix[0])):
+            lines[i//2].append((qr_code.matrix[i][j], qr_code.matrix[i+1][j]))
+    lines.append([])
+    for j in range(0, len(qr_code.matrix[1])):
+        lines[-1].append((qr_code.matrix[-1][j], 0))
+    
+    output = ""
+    for line in lines:
+        for couple in line:
+            match couple:
+                case (0, 0):
+                    output += " "
+                case (0, 1):
+                    output += "▄"
+                case (1, 0):
+                    output += "▀"
+                case (1, 1):
+                    output += "█"
+        output += "\n"
+    
+    with open('assets/qr_code/qr_code.txt', 'w') as file:
+        file.write(output)
+    return
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="C4 Tabling App", description="Displays a text user interface for tabling sign-up")
@@ -66,51 +109,10 @@ if __name__ == "__main__":
             sys.exit(-1)
 
         print(f"Encoding '{argument_namespace.qr_code}'...")
-
-        qr_code = segno.make(argument_namespace.qr_code)
-        qr_code.terminal()
-        
-        if qr_code.is_micro:
-            with open('assets/qr_code/qr_code.txt', 'w') as file:
-                for row in qr_code.matrix:
-                    for byte in row:
-                        if byte == 1:
-                            file.write('██')
-                        else:
-                            file.write('  ')
-                        
-                    file.write('\n')
-            print("QR code successfully written.")
-            sys.exit(0)
-        
-        # Build upper and lower pairs
-        lines = []
-        for i in range(0, len(qr_code.matrix)-1, 2):
-            lines.append([])
-            for j in range(0, len(qr_code.matrix[0])):
-                lines[i//2].append((qr_code.matrix[i][j], qr_code.matrix[i+1][j]))
-        lines.append([])
-        for j in range(0, len(qr_code.matrix[1])):
-            lines[-1].append((qr_code.matrix[-1][j], 0))
-        
-        output = ""
-        for line in lines:
-            for couple in line:
-                match couple:
-                    case (0, 0):
-                        output += " "
-                    case (0, 1):
-                        output += "▄"
-                    case (1, 0):
-                        output += "▀"
-                    case (1, 1):
-                        output += "█"
-            output += "\n"
-        
-        with open('assets/qr_code/qr_code.txt', 'w') as file:
-            file.write(output)
-        
+        write_qr_code(argument_namespace.qr_code)
         print("QR code successfully written.")
+        print("Note: If this QR code displays improperly or is cut off, you might be trying to encode too much data.")
+        print("    : If this occurs, shorten the data you are encoding. Removing unnecessary query strings might help.")
         sys.exit(0)
 
     
