@@ -44,7 +44,7 @@ class TablingApp(App):
 
 
 def write_qr_code(data: str):
-    qr_code = segno.make(argument_namespace.qr_code)
+    qr_code = segno.make(data)
         
     if qr_code.is_micro:
         with open('assets/qr_code/qr_code.txt', 'w') as file:
