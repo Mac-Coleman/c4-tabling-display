@@ -59,16 +59,32 @@ def write_qr_code(data: str):
         return
     
     output = ""
+    resized_code = list(qr_code.matrix)
+    empty = bytearray([0]*((len(qr_code.matrix[0])//2 + 1)*2))
+    resized_code.extend([empty]*((len(qr_code.matrix)//3 + 1)*3 - len(qr_code.matrix)))
 
-    for i in range(0, len(qr_code.matrix)-1, 3):
-        for j in range(0, len(qr_code.matrix[0])-1, 2):
-            value = qr_code.matrix[i][j] * 1 \
-                + qr_code.matrix[i][j+1] * 2 \
-                + qr_code.matrix[i+1][j] * 4 \
-                + qr_code.matrix[i+1][j+1] * 8 \
-                + qr_code.matrix[i+2][j] * 16 \
-                + qr_code.matrix[i+2][j+1] * 32 \
-            
+    for i in range(0, len(resized_code)-1, 3):
+
+        tr = resized_code[i]
+        mr = resized_code[i+1]
+        br = resized_code[i+2]
+
+        tr.extend([0]*(len(tr)%2))
+        mr.extend([0]*(len(mr)%2))
+        br.extend([0]*(len(br)%2))
+
+        for j in range(0, len(tr)-1, 2):
+            value = tr[j] * 1 \
+                + tr[j+1] * 2 \
+                + mr[j]   * 4 \
+                + mr[j+1] * 8 \
+                + br[j]   * 16 \
+                + br[j+1] * 32
+
+            if value == 0:
+                output += ' '
+                continue
+
             if value == 21:
                 output += '▌' # Character does not exist in this set.
                 continue
