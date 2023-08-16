@@ -43,10 +43,13 @@ class TablingApp(App):
         self.qr_code = not self.qr_code
 
 
-def write_qr_code(data: str):
-    qr_code = segno.make(data)
+def write_qr_code(data: str, density: int, allow_micro=False):
+
+    if allow_micro == True:
+        allow_micro = None
+    qr_code = segno.make(data, micro=allow_micro)
         
-    if qr_code.is_micro:
+    if density == 1:
         with open('assets/qr_code/qr_code.txt', 'w') as file:
             for row in qr_code.matrix:
                 for byte in row:
@@ -58,90 +61,87 @@ def write_qr_code(data: str):
                 file.write('\n')
         return
     
-    output = ""
-    resized_code = list(qr_code.matrix)
-    empty = bytearray([0]*((len(qr_code.matrix[0])//2 + 1)*2))
-    resized_code.extend([empty]*((len(qr_code.matrix)//3 + 1)*3 - len(qr_code.matrix)))
-
-    for i in range(0, len(resized_code)-1, 3):
-
-        tr = resized_code[i]
-        mr = resized_code[i+1]
-        br = resized_code[i+2]
-
-        tr.extend([0]*(len(tr)%2))
-        mr.extend([0]*(len(mr)%2))
-        br.extend([0]*(len(br)%2))
-
-        for j in range(0, len(tr)-1, 2):
-            value = tr[j] * 1 \
-                + tr[j+1] * 2 \
-                + mr[j]   * 4 \
-                + mr[j+1] * 8 \
-                + br[j]   * 16 \
-                + br[j+1] * 32
-
-            if value == 0:
-                output += ' '
-                continue
-
-            if value == 21:
-                output += '▌' # Character does not exist in this set.
-                continue
-            
-            if value == 42:
-                output += '▐' # Character does not exist in this set.
-                continue
-            
-            if value == 63:
-                output += '█' # Character does not exist in this set.
-                continue
-            
-            if value > 21:
-                value -= 1
-            
-            if value > 41:
-                value -= 1
-            
-            value += 0x1FAFF # Space before block characters
-            output += chr(value)
-        output += "\n"
-    
-    print(qr_code.matrix)
-    qr_code.terminal()
-    
-    print(output)
-    with open('assets/qr_code/qr_code.txt', 'w') as f:
-        f.write(output)
-    return
-
-    # Build upper and lower pairs
-    lines = []
-    for i in range(0, len(qr_code.matrix)-1, 2):
+    if density == 2:
+        # Build upper and lower pairs
+        lines = []
+        for i in range(0, len(qr_code.matrix)-1, 2):
+            lines.append([])
+            for j in range(0, len(qr_code.matrix[0])):
+                lines[i//2].append((qr_code.matrix[i][j], qr_code.matrix[i+1][j]))
         lines.append([])
-        for j in range(0, len(qr_code.matrix[0])):
-            lines[i//2].append((qr_code.matrix[i][j], qr_code.matrix[i+1][j]))
-    lines.append([])
-    for j in range(0, len(qr_code.matrix[1])):
-        lines[-1].append((qr_code.matrix[-1][j], 0))
+        for j in range(0, len(qr_code.matrix[1])):
+            lines[-1].append((qr_code.matrix[-1][j], 0))
+        
+        output = ""
+        for line in lines:
+            for couple in line:
+                match couple:
+                    case (0, 0):
+                        output += " "
+                    case (0, 1):
+                        output += "▄"
+                    case (1, 0):
+                        output += "▀"
+                    case (1, 1):
+                        output += "█"
+            output += "\n"
     
-    output = ""
-    for line in lines:
-        for couple in line:
-            match couple:
-                case (0, 0):
-                    output += " "
-                case (0, 1):
-                    output += "▄"
-                case (1, 0):
-                    output += "▀"
-                case (1, 1):
-                    output += "█"
-        output += "\n"
+        with open('assets/qr_code/qr_code.txt', 'w') as file:
+            file.write(output)
     
-    with open('assets/qr_code/qr_code.txt', 'w') as file:
-        file.write(output)
+    if density == 3:
+        output = ""
+        resized_code = list(qr_code.matrix)
+        empty = bytearray([0]*((len(qr_code.matrix[0])//2 + 1)*2))
+        resized_code.extend([empty]*((len(qr_code.matrix)//3 + 1)*3 - len(qr_code.matrix)))
 
+        for i in range(0, len(resized_code)-1, 3):
+
+            tr = resized_code[i]
+            mr = resized_code[i+1]
+            br = resized_code[i+2]
+
+            tr.extend([0]*(len(tr)%2))
+            mr.extend([0]*(len(mr)%2))
+            br.extend([0]*(len(br)%2))
+
+            for j in range(0, len(tr)-1, 2):
+                value = tr[j] * 1 \
+                    + tr[j+1] * 2 \
+                    + mr[j]   * 4 \
+                    + mr[j+1] * 8 \
+                    + br[j]   * 16 \
+                    + br[j+1] * 32
+
+                if value == 0:
+                    output += ' '
+                    continue
+
+                if value == 21:
+                    output += '▌' # Character does not exist in this set.
+                    continue
+                
+                if value == 42:
+                    output += '▐' # Character does not exist in this set.
+                    continue
+                
+                if value == 63:
+                    output += '█' # Character does not exist in this set.
+                    continue
+                
+                if value > 21:
+                    value -= 1
+                
+                if value > 41:
+                    value -= 1
+                
+                value += 0x1FAFF # Space before block characters
+                output += chr(value)
+            output += "\n"
+
+        with open('assets/qr_code/qr_code.txt', 'w') as f:
+            f.write(output)
+        return
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="C4 Tabling App", description="Displays a text user interface for tabling sign-up")
@@ -165,7 +165,7 @@ if __name__ == "__main__":
             sys.exit(-1)
 
         print(f"Encoding '{argument_namespace.qr_code}'...")
-        write_qr_code(argument_namespace.qr_code)
+        write_qr_code(argument_namespace.qr_code, 3, allow_micro=True)
         print("QR code successfully written.")
         print("Note: If this QR code displays improperly or is cut off, you might be trying to encode too much data.")
         print("    : If this occurs, shorten the data you are encoding. Removing unnecessary query strings might help.")
