@@ -58,6 +58,47 @@ def write_qr_code(data: str):
                 file.write('\n')
         return
     
+    output = ""
+
+    for i in range(0, len(qr_code.matrix)-1, 3):
+        for j in range(0, len(qr_code.matrix[0])-1, 2):
+            value = qr_code.matrix[i][j] * 1 \
+                + qr_code.matrix[i][j+1] * 2 \
+                + qr_code.matrix[i+1][j] * 4 \
+                + qr_code.matrix[i+1][j+1] * 8 \
+                + qr_code.matrix[i+2][j] * 16 \
+                + qr_code.matrix[i+2][j+1] * 32 \
+            
+            if value == 21:
+                output += '▌' # Character does not exist in this set.
+                continue
+            
+            if value == 42:
+                output += '▐' # Character does not exist in this set.
+                continue
+            
+            if value == 63:
+                output += '█' # Character does not exist in this set.
+                continue
+            
+            if value > 21:
+                value -= 1
+            
+            if value > 41:
+                value -= 1
+            
+            value += 0x1FAFF # Space before block characters
+            output += chr(value)
+        output += "\n"
+    
+    print(qr_code.matrix)
+    qr_code.terminal()
+    
+    print(output)
+    with open('assets/qr_code/qr_code.txt', 'w') as f:
+        f.write(output)
+    return
+
     # Build upper and lower pairs
     lines = []
     for i in range(0, len(qr_code.matrix)-1, 2):
@@ -84,7 +125,6 @@ def write_qr_code(data: str):
     
     with open('assets/qr_code/qr_code.txt', 'w') as file:
         file.write(output)
-    return
 
 
 if __name__ == "__main__":
