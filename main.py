@@ -13,6 +13,14 @@ import random
 import argparse
 import sys
 
+try:
+    import segno
+except ImportError as e:
+    print("Failed to import segno.")
+    print("Warning: package 'segno' is required to generate QR codes.")
+    print("Install it and try again.")
+    raise e
+
 class TablingApp(App):
     """Displays the tabling app."""
 
@@ -143,33 +151,49 @@ def write_qr_code(data: str, density: int, allow_micro=False):
             f.write(output)
         return
 
+def handle_run(args):
+    TablingApp().run()
+
+def handle_qr_codes(args):
+
+    if not args.density in (1, 2, 3):
+        print(f"Error: Invalid density: {args.density}")
+        print("Density must be one of...")
+        print("\t1: 2 characters per bit")
+        print("\t2: 2 bits per character")
+        print("\t3: 6 bits per character")
+        return
+
+    print(f"Encoding '{args.data}' with density {args.density}, {'dis' if not args.allow_micro else ''}allowing Micro QR codes...")
+    write_qr_code(args.data, args.density, allow_micro=args.allow_micro)
+    print("QR code successfully written.")
+    print("Note: If this QR code displays improperly or is cut off, you might be trying to encode too much data.")
+    print("    : If this occurs, shorten the data you are encoding. Removing unnecessary query strings might help.")
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog="C4 Tabling App", description="Displays a text user interface for tabling sign-up")
-    parser.add_argument("-s", "--signup-only", action="store_const", help="only display sign up window", const=True, default=False)
-    parser.add_argument("-n", "--no-backgrounds", action="store_const", help="use only a static background", const=True, default=False)
-    parser.add_argument("-q", "--qr-code", action="store", metavar="DATA", help="encode and write DATA for display as a QR-code and exit")
-    parser.add_argument("-b", "--backgrounds", action="extend", metavar="BACKGROUNDS", help="use BACKGROUNDS as backgrounds for the tabling app")
+
+    parser = argparse.ArgumentParser(prog="C4 Tabling App", description="A program to attract new members to Cornell College Computing Club")
+    subparsers = parser.add_subparsers(help="Subcommands to choose program behavior.")
+
     parser.add_argument("-v", "--version", action="version", version="%(prog)s v0.0.1")
 
+    main_parser = subparsers.add_parser('run', description='run the tabling program', help='run the tabling program')
+    qr_code_parser = subparsers.add_parser('code', description="generate QR codes to display in the tabling program", help='generate QR codes to display in the tabling program')
+
+    main_parser.set_defaults(func=handle_run)
+    qr_code_parser.set_defaults(func=handle_qr_codes)
+
+    main_parser.add_argument("-s", "--signup-only", action="store_const", help="only display sign up window", const=True, default=False)
+
+    background_group = main_parser.add_mutually_exclusive_group()
+    background_group.add_argument("-n", "--no-backgrounds", action="store_const", help="use only a static background", const=True, default=False)
+    background_group.add_argument("-b", "--backgrounds", action="extend", nargs='+', type=str, metavar="BACKGROUNDS", help="use BACKGROUNDS as backgrounds for the tabling app")
+
+    qr_code_parser.add_argument('data', action='store', help="the data to encode")
+    qr_code_parser.add_argument('-m', '--allow-micro', action="store_true", help="allow Micro QR codes. Warning: most mobile phones do not natively support Micro QR codes.")
+    qr_code_parser.add_argument('-d', '--density', action='store', type=int, default=2, help="Set the information density of the code. 1: 2 characters per bit. 2: 2 bits per characters. 3: 6 bits per characters.")
+
+
     argument_namespace = parser.parse_args()
-    
-    if argument_namespace.qr_code is not None:
-        # Encode the data as a QR code and write it to assets/qr_code/qr_code.txt
-
-        try:
-            import segno
-        except ImportError as e:
-            print("Failed to import segno.")
-            print("Warning: package 'segno' is required to generate QR codes.")
-            print("Install it and try again.")
-            sys.exit(-1)
-
-        print(f"Encoding '{argument_namespace.qr_code}'...")
-        write_qr_code(argument_namespace.qr_code, 3, allow_micro=True)
-        print("QR code successfully written.")
-        print("Note: If this QR code displays improperly or is cut off, you might be trying to encode too much data.")
-        print("    : If this occurs, shorten the data you are encoding. Removing unnecessary query strings might help.")
-        sys.exit(0)
-
-    
-    TablingApp().run()
+    print(argument_namespace)
+    argument_namespace.func(argument_namespace)
