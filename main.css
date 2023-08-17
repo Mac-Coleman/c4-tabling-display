@@ -61,15 +61,6 @@ SignupMenu {
 	background: $primary-background-darken-1;
 }
 
-QrCodeMenu {
-	layout: horizontal;
-	border: white hkey;
-	height: auto;
-	min-width: 95;
-	padding: 1 4;
-	background: $primary-background-darken-1;
-}
-
 Static.QrCodeContainer {
 	width: auto;
 	height: auto;
@@ -77,24 +68,14 @@ Static.QrCodeContainer {
 	padding: 2 4;
 }
 
-Center.LeftBar {
-	padding: 0 4 0 0;
-}
-
-Static.Link {
-	color: white;
-	padding: 1;
+QrCodeMenu {
+	background: $primary-background-darken-1;
+	height: 30;
 	width: auto;
-	align: center middle;
+	layout: horizontal;
+	border: white hkey;
 }
 
-#link {
-	width: auto;
-	height: auto;
-	color: white;
-}
-
-#link-holder {
-	width: 10;
-	height: auto;
+Middle.FitShort {
+	padding: 0 1 0 1;
 }

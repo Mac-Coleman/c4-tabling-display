@@ -1,6 +1,6 @@
 from textual.app import ComposeResult
 from textual.widgets import Label, Static
-from textual.containers import Center, Middle
+from textual.containers import Container, Grid, Center, Middle
 
 from ascii_image import AsciiImage
 from logo import C4Logo
@@ -17,13 +17,23 @@ message_text = "Scan the QR code to join our discord server!\n" \
 class QrCodeMenu(Static):
 
     def compose(self) -> ComposeResult:
-        with Center(classes="LeftBar") as c:
-            with Center():
-                yield C4Logo()
-            yield Label("[u][b][#BB66FF]Join the C4 Discord![/#BB66FF][/b][/u]")
+        with Middle(classes="FitShort"):
+            yield C4Logo()
             yield Label(message_text, classes="Prompt")
-        with Middle():
+            with Static() as s:
+                yield Label("LINK GOES HERE", classes="Prompt")
+        with Middle(classes="FitShort"):
             with Static(classes="QrCodeContainer"):
                 yield AsciiImage("assets/qr_code/qr_code.txt", "black", "white")
-            with Center(id="link-holder"):
-                yield Label("LINK HERE", id="link")
+    
+
+        # with Center(classes="LeftBar") as c:
+        #     with Center():
+        #         yield C4Logo()
+        #     yield Label("[u][b][#BB66FF]Join the C4 Discord![/#BB66FF][/b][/u]")
+        #     yield Label(message_text, classes="Prompt")
+        # with Middle():
+        #     with Static(classes="QrCodeContainer"):
+        #         yield AsciiImage("assets/qr_code/qr_code.txt", "black", "white")
+        #     with Center(id="link-holder"):
+        #         yield Label("LINK HERE", id="link")

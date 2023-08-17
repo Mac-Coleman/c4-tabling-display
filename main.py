@@ -58,16 +58,19 @@ def write_qr_code(data: str, density: int, allow_micro=False):
     qr_code = segno.make(data, micro=allow_micro)
         
     if density == 1:
+        output = ""
+        for row in qr_code.matrix:
+            for byte in row:
+                if byte == 1:
+                    output += '██'
+                else:
+                    output += '  '
+                
+            output += '\n'
+        
         with open('assets/qr_code/qr_code.txt', 'w') as file:
-            for row in qr_code.matrix:
-                for byte in row:
-                    if byte == 1:
-                        file.write('██')
-                    else:
-                        file.write('  ')
-                    
-                file.write('\n')
-        return
+            file.write(output)
+        return output
     
     if density == 2:
         # Build upper and lower pairs
@@ -96,6 +99,7 @@ def write_qr_code(data: str, density: int, allow_micro=False):
     
         with open('assets/qr_code/qr_code.txt', 'w') as file:
             file.write(output)
+        return output
     
     if density == 3:
         output = ""
@@ -149,7 +153,7 @@ def write_qr_code(data: str, density: int, allow_micro=False):
 
         with open('assets/qr_code/qr_code.txt', 'w') as f:
             f.write(output)
-        return
+        return output
 
 def handle_run(args):
     TablingApp().run()
@@ -165,10 +169,14 @@ def handle_qr_codes(args):
         return
 
     print(f"Encoding '{args.data}' with density {args.density}, {'dis' if not args.allow_micro else ''}allowing Micro QR codes...")
-    write_qr_code(args.data, args.density, allow_micro=args.allow_micro)
+    q = write_qr_code(args.data, args.density, allow_micro=args.allow_micro)
     print("QR code successfully written.")
-    print("Note: If this QR code displays improperly or is cut off, you might be trying to encode too much data.")
-    print("    : If this occurs, shorten the data you are encoding. Removing unnecessary query strings might help.")
+
+    if len(q.split('\n')) >= 28:
+        print("WARNING: This QR code may be too big to properly display!")
+        print("Note: If this QR code displays improperly or is cut off, you might be trying to encode too much data.")
+        print("    : If this occurs, shorten the data you are encoding. Removing unnecessary query strings might help.")
+        print("    : You may also retry this command with the --density option.")
 
 if __name__ == "__main__":
 
@@ -195,5 +203,4 @@ if __name__ == "__main__":
 
 
     argument_namespace = parser.parse_args()
-    print(argument_namespace)
     argument_namespace.func(argument_namespace)
