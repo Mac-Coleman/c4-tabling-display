@@ -33,6 +33,8 @@ class SignupMenu(Static):
             self.email_input.value = ""
             self.name_input.focus()
 
+        self.app.query_one("ContentSwitcher.MenuHolder").current = "snake"
+
         self.thanks.styles.opacity = "100%"
         self.set_timer(5.0, self.clear_text)
         self.thanks.update(f"Thanks for signing up, [b][u][#BB66FF]{first_name}[/#BB66FF][/b][/u]!")

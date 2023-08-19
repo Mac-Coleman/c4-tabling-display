@@ -8,6 +8,7 @@ from ascii_image import AsciiImage
 from logo import C4Logo
 from signup_menu import SignupMenu
 from qr_code_menu import QrCodeMenu
+from snake import SnakeMenu
 
 import random
 import argparse
@@ -38,9 +39,10 @@ class TablingApp(App):
             numbers = 5000
             l = " ".join(["{:02X}".format(random.randint(0,255)) for x in range(numbers)])
             b.update(l)
-            with ContentSwitcher(initial="signup", classes="MenuHolder"):
+            with ContentSwitcher(initial="signup", id="menus", classes="MenuHolder"):
                 yield SignupMenu(id="signup")
                 yield QrCodeMenu(id="qr-code")
+                yield SnakeMenu(id="snake")
 
     def action_switch_qr_code_display(self, params=None):
         if self.qr_code:

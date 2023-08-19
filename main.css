@@ -79,3 +79,15 @@ QrCodeMenu {
 Middle.FitShort {
 	padding: 0 3 0 3;
 }
+
+/*Snake-related styles.*/
+
+SnakeGame {
+	layout: grid;
+	grid-size: 34 17;
+	grid-columns: 2;
+	grid-rows: 1;
+	background: $primary-background-darken-2;
+	grid-gutter: 0;
+	border: white;
+}
