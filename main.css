@@ -84,10 +84,27 @@ Middle.FitShort {
 
 SnakeGame {
 	layout: grid;
-	grid-size: 34 17;
-	grid-columns: 2;
-	grid-rows: 1;
+	grid-size: 15 15;
+	grid-columns: 4;
+	grid-rows: 2;
 	background: $primary-background-darken-2;
 	grid-gutter: 0;
 	border: white;
+	height: 30;
+	width: 60;
+}
+
+SnakeMenu {
+	background: $primary-background-darken-1;
+	height: auto;
+	width: auto;
+	padding: 1 4;
+	border: white hkey;
+}
+
+SnakeCell {
+	height: 1;
+	width: 2;
+	color: white;
+	background: rebeccapurple;
 }
