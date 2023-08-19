@@ -8,7 +8,7 @@ from logo import C4Logo
 class SnakeCell(Widget):
     
     def render(self):
-        return "HI"
+        return "▀▄▀▄\n▀▄▀▄"
 
 class SnakeGame(Static):
 
@@ -23,9 +23,22 @@ class SnakeMenu(Static):
     def compose(self) -> ComposeResult:
         yield SnakeGame()
         with Middle(classes="FitShort"):
-            with Center():
+            with Center(classes="FitShort"):
                 yield C4Logo()
-            with Center():
-                yield Label("Ready...")
-                yield Label("Set...")
-                yield Label("Go!")
+            with Center(classes="FitShort"):
+                yield Label("Ready... ", id="ready", classes="prepare")
+                yield Label("Set... ", id="set", classes="prepare")
+                yield Label("Go!", id="go", classes="prepare")
+    
+    def start(self) -> None:
+        r = self.query_one("#ready")
+        s = self.query_one("#set")
+        g = self.query_one("#go")
+
+        r.styles.animate("opacity", value=1.0, duration=0.25)
+        s.styles.animate("opacity", value=1.0, duration=0.25, delay=1.5)
+        g.styles.animate("opacity", value=1.0, duration=0.25, delay=3)
+        
+        r.styles.animate("opacity", value=0.0, duration=2, delay=4.5)
+        s.styles.animate("opacity", value=0.0, duration=2, delay=4.5)
+        g.styles.animate("opacity", value=0.0, duration=2, delay=4.5)

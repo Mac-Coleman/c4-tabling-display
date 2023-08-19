@@ -104,12 +104,18 @@ SnakeMenu {
 }
 
 SnakeCell {
-	height: 1;
-	width: 2;
-	color: white;
-	background: rebeccapurple;
+	height: 2;
+	width: 4;
+	color: $primary-background-darken-1;
+	background: $primary-background-darken-2;
 }
 
 Center.FitShort {
 	width: 60;
+	layout: horizontal;
+}
+
+Label.prepare {
+	color: white;
+	opacity: 0.0;
 }
