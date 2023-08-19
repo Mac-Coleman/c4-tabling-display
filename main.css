@@ -89,17 +89,18 @@ SnakeGame {
 	grid-rows: 2;
 	background: $primary-background-darken-2;
 	grid-gutter: 0;
-	border: white;
+	border: double white;
 	height: 30;
 	width: 60;
 }
 
 SnakeMenu {
 	background: $primary-background-darken-1;
-	height: auto;
+	height: 34;
 	width: auto;
 	padding: 1 4;
 	border: white hkey;
+	layout: horizontal;
 }
 
 SnakeCell {
@@ -107,4 +108,8 @@ SnakeCell {
 	width: 2;
 	color: white;
 	background: rebeccapurple;
+}
+
+Center.FitShort {
+	width: 60;
 }
