@@ -25,7 +25,7 @@ except ImportError as e:
 class TablingApp(App):
     """Displays the tabling app."""
 
-    CSS_PATH = "main.css"
+    CSS_PATH = "main.tcss"
 
     BINDINGS = [
         Binding("escape", "switch_qr_code_display()", 'display_qr_code', show=False, priority=True),
