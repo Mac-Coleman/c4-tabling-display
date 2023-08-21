@@ -14,7 +14,11 @@ class SnakeGame(Static):
 
     def compose(self) -> ComposeResult:
         for i in range(15 * 15):
-            yield SnakeCell()
+            s = SnakeCell()
+            if i % 2 == 1:
+                s.styles.color = "#333B42"
+                s.styles.background = "#212A31"
+            yield s
     
     def on_mount(self) -> None:
         self.border_title = "[i]Snake[/i]"
