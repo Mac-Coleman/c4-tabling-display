@@ -1,3 +1,4 @@
+from textual.binding import Binding
 from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.widgets import Static, Label
@@ -39,7 +40,14 @@ class SnakeCell(Widget):
         self.set_background_type(self.background_light)
         return "▀▄▀▄\n▀▄▀▄"
 
-class SnakeGame(Static):
+class SnakeGame(Static, can_focus=True):
+
+    BINDINGS = [
+        Binding("w", "up", "Go up", show=False, priority=True),
+        Binding("a", "left", "Go left", show=False, priority=True),
+        Binding("s", "down", "Go down", show=False, priority=True),
+        Binding("d", "right", "Go right", show=False, priority=True)
+    ]
 
     def compose(self) -> ComposeResult:
 
@@ -64,10 +72,12 @@ class SnakeGame(Static):
         for block in self.snake_list:
             self.grid[block[0]][block[1]].set_snake(True)
 
-        self.timer = self.set_interval(0.5, callback=self.update)
-    
+        self.timer = self.set_interval(0.25, callback=self.update)
+        self.focus()
+
     def get_block_at(self, position):
         return self.grid[position[0]][position[1]]
+    
     
     def update(self):
         dx = 0
@@ -99,6 +109,22 @@ class SnakeGame(Static):
             b.set_snake(True)
             b.refresh()
     
+    def action_up(self) -> None:
+        if self.direction != Direction.DOWN:
+            self.direction = Direction.UP
+    
+    def action_left(self) -> None:
+        if self.direction != Direction.RIGHT:
+            self.direction = Direction.LEFT
+    
+    def action_down(self) -> None:
+        if self.direction != Direction.UP:
+            self.direction = Direction.DOWN
+
+    def action_right(self) -> None:
+        if self.direction != Direction.LEFT:
+            self.direction = Direction.RIGHT
+        
     def on_mount(self) -> None:
         self.border_title = "[i]Snake[/i]"
 
