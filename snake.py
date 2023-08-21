@@ -17,10 +17,15 @@ class Direction(Enum):
     DOWN = 2
     LEFT = 3
 
+class SnakeCellType(Enum):
+    BACKGROUND = 0
+    FOOD = 1
+    SNAKE = 2
+
 class SnakeCell(Widget):
     def set_background_type(self, light: bool):
         self.background_light = light
-        self.is_snake = False
+        self.cell_type = SnakeCellType.BACKGROUND
 
         if light:
             self.styles.color = "#333B42"
@@ -29,13 +34,17 @@ class SnakeCell(Widget):
             self.styles.color = "#0F1921"
             self.styles.background = "#080d12"
     
-    def set_snake(self, is_snake: bool):
-        self.is_snake = is_snake
+    def set_type(self, cell_type: SnakeCellType):
+        self.cell_type = cell_type
     
     def render(self):
-        if self.is_snake:
+        if self.cell_type == SnakeCellType.SNAKE:
             self.styles.color = "#FFFFFF"
             return "████\n████"
+        
+        if self.cell_type == SnakeCellType.FOOD:
+            self.styles.color = "#FFCCCC"
+            return "▄▀▀▄\n▀▄▄▀"
         
         self.set_background_type(self.background_light)
         return "▀▄▀▄\n▀▄▀▄"
@@ -68,11 +77,14 @@ class SnakeGame(Static, can_focus=True):
         self.head = (11, 7)
         self.snake_list = [self.head, (12, 7), (13, 7)]
         self.direction = Direction.UP
+        self.next_direction = self.direction
+        self.food = (7, 7)
+        self.score = 0
 
         for block in self.snake_list:
-            self.grid[block[0]][block[1]].set_snake(True)
-
-        self.timer = self.set_interval(0.25, callback=self.update)
+            self.grid[block[0]][block[1]].set_type(SnakeCellType.SNAKE)
+        self.interval = 0.25
+        self.timer = self.set_interval(self.interval, callback=self.update)
         self.focus()
 
     def get_block_at(self, position):
@@ -82,6 +94,8 @@ class SnakeGame(Static, can_focus=True):
     def update(self):
         dx = 0
         dy = 0
+
+        self.direction = self.next_direction
         match self.direction:
             case Direction.UP:
                 dy = -1
@@ -98,32 +112,50 @@ class SnakeGame(Static, can_focus=True):
             self.timer.stop()
             return
         
+        if self.head in self.snake_list:
+            self.timer.stop()
+        
         self.snake_list.insert(0, self.head)
 
-        tail = self.get_block_at(self.snake_list.pop())
-        tail.set_snake(False)
-        tail.refresh()
+        found_food = False
+
+        if self.food in self.snake_list:
+            found_food = True
+            self.score += 1
+            self.timer.stop()
+            self.interval *= 0.95
+            self.timer = self.set_interval(self.interval, callback=self.update)
+            self.food = (random.randint(0, 14), random.randint(0, 14))
+        
+        b = self.get_block_at(self.food)
+        b.set_type(SnakeCellType.FOOD)
+        b.refresh()
+        
+        if not found_food:
+            tail = self.get_block_at(self.snake_list.pop())
+            tail.set_type(SnakeCellType.BACKGROUND)
+            tail.refresh()
 
         for snake_block in self.snake_list:
             b = self.get_block_at(snake_block)
-            b.set_snake(True)
+            b.set_type(SnakeCellType.SNAKE)
             b.refresh()
     
     def action_up(self) -> None:
         if self.direction != Direction.DOWN:
-            self.direction = Direction.UP
+            self.next_direction = Direction.UP
     
     def action_left(self) -> None:
         if self.direction != Direction.RIGHT:
-            self.direction = Direction.LEFT
+            self.next_direction = Direction.LEFT
     
     def action_down(self) -> None:
         if self.direction != Direction.UP:
-            self.direction = Direction.DOWN
+            self.next_direction = Direction.DOWN
 
     def action_right(self) -> None:
         if self.direction != Direction.LEFT:
-            self.direction = Direction.RIGHT
+            self.next_direction = Direction.RIGHT
         
     def on_mount(self) -> None:
         self.border_title = "[i]Snake[/i]"
