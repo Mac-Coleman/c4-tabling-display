@@ -52,10 +52,12 @@ class SnakeCell(Widget):
 class SnakeGame(Static, can_focus=True):
 
     BINDINGS = [
-        Binding("w", "up", "Go up", show=False, priority=True),
-        Binding("a", "left", "Go left", show=False, priority=True),
-        Binding("s", "down", "Go down", show=False, priority=True),
-        Binding("d", "right", "Go right", show=False, priority=True)
+        Binding("w, up", "up", "Go up", show=False, priority=True),
+        Binding("a, left", "left", "Go left", show=False, priority=True),
+        Binding("s, down", "down", "Go down", show=False, priority=True),
+        Binding("d, right", "right", "Go right", show=False, priority=True),
+        Binding("r", "restart", "Restart the game", show=False, priority=True),
+        Binding("space, enter", "finish", "Finish the game", show=False)
     ]
 
     def compose(self) -> ComposeResult:
@@ -84,6 +86,11 @@ class SnakeGame(Static, can_focus=True):
         for block in self.snake_list:
             self.grid[block[0]][block[1]].set_type(SnakeCellType.SNAKE)
         self.interval = 0.25
+
+        try:
+            self.timer.stop()
+        except AttributeError as e:
+            pass
         self.timer = self.set_interval(self.interval, callback=self.update)
         self.focus()
 
@@ -156,6 +163,9 @@ class SnakeGame(Static, can_focus=True):
     def action_right(self) -> None:
         if self.direction != Direction.LEFT:
             self.next_direction = Direction.RIGHT
+    
+    def action_restart(self) -> None:
+        self.start()
         
     def on_mount(self) -> None:
         self.border_title = "[i]Snake[/i]"
