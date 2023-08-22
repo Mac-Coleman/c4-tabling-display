@@ -33,6 +33,8 @@ class TablingApp(App):
 
 
     def compose(self) -> ComposeResult:
+
+        self.current_user = ("EMPTY", "EMPTY")
         
         self.qr_code = False
         with Static("", classes="Background") as b:
@@ -45,8 +47,16 @@ class TablingApp(App):
                 yield SnakeMenu(id="snake")
     
     def on_signup_menu_name_entered(self, message: SignupMenu.NameEntered):
+        self.current_user = (message.name, message.email_address)
         with open("tabling_names.csv", 'a') as file:
             file.write(f"{message.name},{message.email_address}\n")
+        
+    def on_snake_menu_game_finished(self, message: SnakeMenu.GameFinished):
+        n = self.current_user[0]
+        e = self.current_user[1]
+
+        with open("tabling_scores.csv", 'a') as file:
+            file.write(f"{n},{e},{message.score},{message.game_time}\n")
 
     def action_switch_qr_code_display(self, params=None):
         if self.qr_code:
