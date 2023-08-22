@@ -1,3 +1,4 @@
+from textual import on
 from textual.app import ComposeResult
 from textual.widgets import Input, Static
 from textual.containers import Center
@@ -24,28 +25,23 @@ class SignupMenu(Static):
         yield self.email_input
         yield self.thanks
 
-    def on_input_submitted(self, message: Input.Submitted):
-        if message.control == self.name_input:
-            self.email_input.focus()
-            return
-
-        if message.control != self.email_input:
-            return
-
-        first_name = self.name_input.value.split(" ")[0]
-
+    @on(Input.Submitted, "#name")
+    def name_entered(self, message: Input.Submitted):
+        self.email_input.focus()
+    
+    @on(Input.Submitted, "#email")
+    def email_entered(self, message: Input.Submitted):
         self.post_message(self.NameEntered(self.name_input.value, self.email_input.value))
 
         self.name_input.value = ""
         self.email_input.value = ""
-        self.name_input.focus()
 
-        self.app.query_one("ContentSwitcher.MenuHolder").current = "snake"
-        self.app.query_one("#snake").setup()
+    def display_thanks(self, name: str):
+        self.name_input.focus()
 
         self.thanks.styles.opacity = "100%"
         self.set_timer(5.0, self.clear_text)
-        self.thanks.update(f"Thanks for signing up, [b][u][#BB66FF]{first_name}[/#BB66FF][/b][/u]!")
+        self.thanks.update(f"Thanks for signing up, [b][u][#BB66FF]{name}[/#BB66FF][/b][/u]!")
         self.thanks.styles.animate("opacity", value=0.0, duration=1.0, delay=4.0)
     
     def on_mount(self) -> None:

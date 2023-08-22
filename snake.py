@@ -108,6 +108,12 @@ class SnakeGame(Static, can_focus=True):
         def __init__(self, game_time):
             self.game_time = game_time
             super().__init__()
+    
+    class GameQuit(Message):
+        """A message sent when the user finishes playing the game."""
+
+        def __init__(self):
+            super().__init__()
 
     def compose(self) -> ComposeResult:
 
@@ -248,7 +254,7 @@ class SnakeGame(Static, can_focus=True):
             return
         
         self.timer.stop()
-        self.app.query_one("ContentSwitcher.MenuHolder").current = "signup"
+        self.post_message(self.GameQuit())
         
     def on_mount(self) -> None:
         self.border_title = "[i]Snake[/i]"

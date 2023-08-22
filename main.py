@@ -51,12 +51,21 @@ class TablingApp(App):
         with open("tabling_names.csv", 'a') as file:
             file.write(f"{message.name},{message.email_address}\n")
         
+        self.query_one("#menus").current = "snake"
+        self.query_one("#snake").setup()
+        
     def on_snake_game_game_ended(self, message: SnakeGame.GameEnded):
         n = self.current_user[0]
         e = self.current_user[1]
 
         with open("tabling_scores.csv", 'a') as file:
             file.write(f"{n},{e},{message.score},{message.game_time}\n")
+    
+    def on_snake_game_game_quit(self, message: SnakeGame.GameQuit):
+        n = self.current_user[0].split(" ")[0]
+
+        self.query_one("#menus").current = "signup"
+        self.query_one("#signup").display_thanks(n)
 
     def action_switch_qr_code_display(self, params=None):
         if self.qr_code:
