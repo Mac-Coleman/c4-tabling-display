@@ -4,7 +4,7 @@ from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.widgets import Static, Label, Digits
 from textual.message import Message
-from textual.containers import Middle, Center
+from textual.containers import Middle, Center, Horizontal
 from textual.color import Color
 
 import random
@@ -244,14 +244,17 @@ class SnakeMenu(Static):
     def compose(self) -> ComposeResult:
         yield SnakeGame()
         with Middle(classes="FitShort"):
-            yield C4Logo()
-            self.scoreboard = Digits("000")
-            yield self.scoreboard
+            with Horizontal():
+                with Middle(id="score-container"):
+                    self.scoreboard = Digits("000")
+                    yield self.scoreboard
 
-            self.timeboard = Digits("000")
-            yield self.timeboard
-
-            yield Static(" \n ", id="status")
+                    self.timeboard = Digits("000")
+                    yield self.timeboard
+                with Middle(id="status-container"):
+                    yield Label("", id="status")
+            with Center():
+                yield C4Logo()
     
     def on_mount(self) -> None:
         self.scoreboard.border_title = "Score:"
@@ -266,14 +269,20 @@ class SnakeMenu(Static):
     
     def on_snake_game_game_setup(self, message: SnakeGame.GameSetup):
         s = self.query_one("#status")
-        s.update("Guide the snake to pick up food to score points.\n" \
-            "Control the snake with [b][u]WASD[/u][/b] or the [b][u]ARROW[/u][/b] keys.\n" \
+        c = self.query_one("#status-container")
+        s.update("Guide the snake to pick up food to score points.\n\n" \
+            "Control the snake with [b][u]WASD[/u][/b] or the [b][u]ARROW[/u][/b] keys.\n\n" \
             "Press the movement keys to begin.")
+        c.refresh()
     
     def on_snake_game_game_started(self, message:SnakeGame.GameStarted):
         s = self.query_one("#status")
+        c = self.query_one("#status-container")
         s.update(" \n ")
+        c.refresh()
 
     def on_snake_game_game_ended(self, message: SnakeGame.GameEnded):
         s = self.query_one("#status")
+        c = self.query_one("#status-container")
         s.update("Game Over!\n\nPress [u][b]R[/u][/b] to retry, or [u][b]ENTER[/u][/b] to finish playing.")
+        c.refresh()
