@@ -89,6 +89,12 @@ class SnakeGame(Static, can_focus=True):
             self.score = score
             self.game_time = game_time
             super().__init__()
+    
+    class GameStarted(Message):
+        """A message sent when the game starts."""
+
+        def __init__(self):
+            super().__init__()
 
     def compose(self) -> ComposeResult:
 
@@ -125,6 +131,7 @@ class SnakeGame(Static, can_focus=True):
             pass
         self.timer = self.set_interval(self.interval, callback=self.update)
         self.focus()
+        self.post_message(self.GameStarted())
         self.draw()
 
     def get_block_at(self, position):
@@ -206,6 +213,10 @@ class SnakeGame(Static, can_focus=True):
     
     def action_restart(self) -> None:
         self.start()
+    
+    def action_finish(self) -> None:
+        self.timer.stop()
+        self.app.query_one("ContentSwitcher.MenuHolder").current = "signup"
         
     def on_mount(self) -> None:
         self.border_title = "[i]Snake[/i]"
@@ -214,13 +225,14 @@ class SnakeMenu(Static):
     def compose(self) -> ComposeResult:
         yield SnakeGame()
         with Middle(classes="FitShort"):
-            with Center(classes="FitShort"):
-                yield C4Logo()
+            yield C4Logo()
             self.scoreboard = Digits("000")
             yield self.scoreboard
 
             self.timeboard = Digits("000")
             yield self.timeboard
+
+            yield Label(" \n ", id="status")
     
     def on_mount(self) -> None:
         self.scoreboard.border_title = "Score:"
@@ -232,6 +244,12 @@ class SnakeMenu(Static):
     
     def on_snake_game_score_changed(self, message: SnakeGame.ScoreChanged):
         self.scoreboard.update(f"{message.score:03}")
+    
+    def on_snake_game_game_started(self, message:SnakeGame.GameStarted):
+        s = self.query_one("#status")
+        s.update(" \n ")
+        self.notify("Started")
 
     def on_snake_game_game_ended(self, message: SnakeGame.GameEnded):
-        self.notify(f"Game ended with score {message.score} and time {message.game_time}")
+        s = self.query_one("#status")
+        s.update("Game Over!\nPress [b]R[/b] to retry, or [b]ENTER[/b] to quit.")

@@ -127,3 +127,7 @@ Digits {
 	text-align: right;
 	border: white round;
 }
+
+Label {
+	color: white;
+}
