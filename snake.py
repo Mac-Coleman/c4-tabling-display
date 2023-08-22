@@ -111,9 +111,7 @@ class SnakeGame(Static, can_focus=True):
         return self.grid[position[0]][position[1]]
     
     def draw(self):
-        for row in self.grid:
-            for cell in row:
-                cell.set_type(SnakeCellType.BACKGROUND)
+        [[cell.set_type(SnakeCellType.BACKGROUND) for cell in row] for row in self.grid]
         
         self.get_block_at(self.food).set_type(SnakeCellType.FOOD)
         
