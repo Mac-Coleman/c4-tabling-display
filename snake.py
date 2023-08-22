@@ -162,7 +162,7 @@ class SnakeGame(Static, can_focus=True):
             found_food = True
             self.score += 1
             self.timer.stop()
-            self.interval *= 0.95
+            self.interval *= 0.975
             self.timer = self.set_interval(self.interval, callback=self.update)
             self.food = (random.randint(0, 14), random.randint(0, 14))
             self.post_message(self.ScoreChanged(self.score))
