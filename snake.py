@@ -128,6 +128,10 @@ class SnakeGame(Static, can_focus=True):
         self.interval = 0.25
         self.focus()
         self.draw()
+        try:
+            self.timer.stop()
+        except AttributeError as e:
+            pass
         self.timer = self.set_interval(self.interval, callback=self.update, pause=True) # Make the timer stopped to begin with.
         self.post_message(self.GameSetup())
     
