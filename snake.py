@@ -83,11 +83,12 @@ class SnakeGame(Static, can_focus=True):
             self.score = score
             super().__init__()
     
-    class GameEnded(Message):
+    class GameEnded(Message, bubble=True):
         """A message sent when the game ends."""
 
-        def __init__(self, score):
+        def __init__(self, score, game_time):
             self.score = score
+            self.game_time = game_time
             super().__init__()
     
     class GameSetup(Message):
@@ -104,7 +105,8 @@ class SnakeGame(Static, can_focus=True):
     
     class GameUpdated(Message):
         """A message sent when the game is updated."""
-        def __init__(self):
+        def __init__(self, game_time):
+            self.game_time = game_time
             super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -146,6 +148,7 @@ class SnakeGame(Static, can_focus=True):
         self.timer.resume()
         self.focus()
         self.draw()
+        self.start_time = time.time()
 
     def get_block_at(self, position):
         return self.grid[position[0]][position[1]]
@@ -162,7 +165,7 @@ class SnakeGame(Static, can_focus=True):
     
     
     def update(self):
-        self.post_message(self.GameUpdated())
+        self.post_message(self.GameUpdated(time.time() - self.start_time))
         dx = 0
         dy = 0
 
@@ -181,14 +184,14 @@ class SnakeGame(Static, can_focus=True):
 
         if self.head[0] < 0 or self.head[0] >= 15 or self.head[1] < 0 or self.head[1] >= 15:
             self.timer.stop()
-            self.post_message(self.GameEnded(self.score))
+            self.post_message(self.GameEnded(self.score, time.time() - self.start_time))
             self.state = SnakeGameState.GAMEOVER
             self.draw()
             return
         
         if self.head in self.snake_list:
             self.timer.stop()
-            self.post_message(self.GameEnded(self.score))
+            self.post_message(self.GameEnded(self.score, time.time() - self.start_time))
             self.state = SnakeGameState.GAMEOVER
         
         self.snake_list.insert(0, self.head)
@@ -252,12 +255,6 @@ class SnakeGame(Static, can_focus=True):
 
 class SnakeMenu(Static):
 
-    class GameFinished(Message):
-        def __init__(self, score, time):
-            self.score = score
-            self.game_time = time
-            super().__init__()
-
     def compose(self) -> ComposeResult:
         yield SnakeGame()
         with Middle(classes="FitShort"):
@@ -298,16 +295,12 @@ class SnakeMenu(Static):
         c = self.query_one("#status-container")
         s.update(" \n ")
         c.refresh()
-        self.start_time = time.time()
 
     def on_snake_game_game_ended(self, message: SnakeGame.GameEnded):
         s = self.query_one("#status")
         c = self.query_one("#status-container")
         s.update("Game Over!\n\nPress [u][b]R[/u][/b] to retry, or [u][b]ENTER[/u][/b] to finish playing.")
         c.refresh()
-        d = time.time() - self.start_time
-        self.post_message(self.GameFinished(message.score, d))
-    
+
     def on_snake_game_game_updated(self, message: SnakeGame.GameUpdated):
-        d = time.time() - self.start_time
-        self.timeboard.update(f"{int(d):03}")
+        self.timeboard.update(f"{int(message.game_time):03}")

@@ -8,7 +8,7 @@ from ascii_image import AsciiImage
 from logo import C4Logo
 from signup_menu import SignupMenu
 from qr_code_menu import QrCodeMenu
-from snake import SnakeMenu
+from snake import SnakeMenu, SnakeGame
 
 import random
 import argparse
@@ -51,7 +51,7 @@ class TablingApp(App):
         with open("tabling_names.csv", 'a') as file:
             file.write(f"{message.name},{message.email_address}\n")
         
-    def on_snake_menu_game_finished(self, message: SnakeMenu.GameFinished):
+    def on_snake_game_game_ended(self, message: SnakeGame.GameEnded):
         n = self.current_user[0]
         e = self.current_user[1]
 
