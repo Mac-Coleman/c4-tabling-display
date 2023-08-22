@@ -1,4 +1,5 @@
 from textual.binding import Binding
+from textual.reactive import reactive
 from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.widgets import Static, Label
@@ -23,6 +24,9 @@ class SnakeCellType(Enum):
     SNAKE = 2
 
 class SnakeCell(Widget):
+
+    cell_type = reactive(SnakeCellType.BACKGROUND)
+
     def set_background_type(self, light: bool):
         self.background_light = light
         self.cell_type = SnakeCellType.BACKGROUND
@@ -97,6 +101,16 @@ class SnakeGame(Static, can_focus=True):
     def get_block_at(self, position):
         return self.grid[position[0]][position[1]]
     
+    def draw(self):
+        for row in self.grid:
+            for cell in row:
+                cell.set_type(SnakeCellType.BACKGROUND)
+        
+        self.get_block_at(self.food).set_type(SnakeCellType.FOOD)
+        
+        for position in self.snake_list:
+            self.get_block_at(position).set_type(SnakeCellType.SNAKE)
+    
     
     def update(self):
         dx = 0
@@ -134,19 +148,10 @@ class SnakeGame(Static, can_focus=True):
             self.timer = self.set_interval(self.interval, callback=self.update)
             self.food = (random.randint(0, 14), random.randint(0, 14))
         
-        b = self.get_block_at(self.food)
-        b.set_type(SnakeCellType.FOOD)
-        b.refresh()
-        
         if not found_food:
-            tail = self.get_block_at(self.snake_list.pop())
-            tail.set_type(SnakeCellType.BACKGROUND)
-            tail.refresh()
+            self.get_block_at(self.snake_list.pop())
 
-        for snake_block in self.snake_list:
-            b = self.get_block_at(snake_block)
-            b.set_type(SnakeCellType.SNAKE)
-            b.refresh()
+        self.draw()
     
     def action_up(self) -> None:
         if self.direction != Direction.DOWN:
