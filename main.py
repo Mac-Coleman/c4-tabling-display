@@ -43,6 +43,10 @@ class TablingApp(App):
                 yield SignupMenu(id="signup")
                 yield QrCodeMenu(id="qr-code")
                 yield SnakeMenu(id="snake")
+    
+    def on_signup_menu_name_entered(self, message: SignupMenu.NameEntered):
+        with open("tabling_names.csv", 'a') as file:
+            file.write(f"{message.name},{message.email_address}\n")
 
     def action_switch_qr_code_display(self, params=None):
         if self.qr_code:
