@@ -8,6 +8,7 @@ from textual.containers import Middle, Center, Horizontal
 from textual.color import Color
 
 import random
+import time
 import copy
 from enum import Enum
 
@@ -101,6 +102,11 @@ class SnakeGame(Static, can_focus=True):
 
         def __init__(self):
             super().__init__()
+    
+    class GameUpdated(Message):
+        """A message sent when the game is updated."""
+        def __init__(self):
+            super().__init__()
 
     def compose(self) -> ComposeResult:
 
@@ -157,6 +163,7 @@ class SnakeGame(Static, can_focus=True):
     
     
     def update(self):
+        self.post_message(self.GameUpdated())
         dx = 0
         dy = 0
 
@@ -278,15 +285,21 @@ class SnakeMenu(Static):
             "Control the snake with [b][u]WASD[/u][/b] or the [b][u]ARROW[/u][/b] keys.\n\n" \
             "Press the movement keys to begin.")
         c.refresh()
+        self.timeboard.update("000")
     
     def on_snake_game_game_started(self, message:SnakeGame.GameStarted):
         s = self.query_one("#status")
         c = self.query_one("#status-container")
         s.update(" \n ")
         c.refresh()
+        self.start_time = time.time()
 
     def on_snake_game_game_ended(self, message: SnakeGame.GameEnded):
         s = self.query_one("#status")
         c = self.query_one("#status-container")
         s.update("Game Over!\n\nPress [u][b]R[/u][/b] to retry, or [u][b]ENTER[/u][/b] to finish playing.")
         c.refresh()
+    
+    def on_snake_game_game_updated(self, message: SnakeGame.GameUpdated):
+        d = time.time() - self.start_time
+        self.timeboard.update(f"{int(d):03}")
