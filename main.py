@@ -70,6 +70,7 @@ class TablingApp(App):
     def action_switch_qr_code_display(self, params=None):
         if self.qr_code:
             self.query_one("ContentSwitcher.MenuHolder").current = "signup"
+            self.query_one("#signup").name_input.focus()
         else:
             self.query_one("ContentSwitcher.MenuHolder").current = "qr-code"
 
