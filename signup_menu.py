@@ -34,7 +34,7 @@ class SignupMenu(Static):
             self.name_input.focus()
 
         self.app.query_one("ContentSwitcher.MenuHolder").current = "snake"
-        self.app.query_one("#snake").start()
+        self.app.query_one("#snake").setup()
 
         self.thanks.styles.opacity = "100%"
         self.set_timer(5.0, self.clear_text)

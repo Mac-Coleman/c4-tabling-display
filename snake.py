@@ -90,6 +90,12 @@ class SnakeGame(Static, can_focus=True):
             self.game_time = game_time
             super().__init__()
     
+    class GameSetup(Message):
+        """A message sent when the game is set up."""
+
+        def __init__(self):
+            super().__init__()
+    
     class GameStarted(Message):
         """A message sent when the game starts."""
 
@@ -110,28 +116,26 @@ class SnakeGame(Static, can_focus=True):
             self.grid[i//15][i%15] = s
             yield s
     
-    def start(self):
-
+    def setup(self):
         self.head = (11, 7)
         self.snake_list = [self.head, (12, 7), (13, 7)]
         self.direction = Direction.UP
         self.next_direction = self.direction
         self.food = (7, 7)
         self.score = 0
-        self.state = SnakeGameState.PLAYING
+        self.state = SnakeGameState.WAITING
         self.post_message(self.ScoreChanged(self.score)) # Make sure that score update is sent
-
-        for block in self.snake_list:
-            self.grid[block[0]][block[1]].set_type(SnakeCellType.SNAKE)
         self.interval = 0.25
-
-        try:
-            self.timer.stop()
-        except AttributeError as e:
-            pass
-        self.timer = self.set_interval(self.interval, callback=self.update)
         self.focus()
+        self.draw()
+        self.timer = self.set_interval(self.interval, callback=self.update, pause=True) # Make the timer stopped to begin with.
+        self.post_message(self.GameSetup())
+    
+    def start(self):
+        self.state = SnakeGameState.PLAYING
         self.post_message(self.GameStarted())
+        self.timer.resume()
+        self.focus()
         self.draw()
 
     def get_block_at(self, position):
@@ -196,25 +200,40 @@ class SnakeGame(Static, can_focus=True):
         self.draw()
     
     def action_up(self) -> None:
+        if self.state == SnakeGameState.WAITING:
+            self.start()
+
         if self.direction != Direction.DOWN:
             self.next_direction = Direction.UP
     
     def action_left(self) -> None:
+        if self.state == SnakeGameState.WAITING:
+            self.start()
+
         if self.direction != Direction.RIGHT:
             self.next_direction = Direction.LEFT
     
     def action_down(self) -> None:
+        if self.state == SnakeGameState.WAITING:
+            self.start()
+
         if self.direction != Direction.UP:
             self.next_direction = Direction.DOWN
 
     def action_right(self) -> None:
+        if self.state == SnakeGameState.WAITING:
+            self.start()
+
         if self.direction != Direction.LEFT:
             self.next_direction = Direction.RIGHT
     
     def action_restart(self) -> None:
-        self.start()
+        self.setup()
     
     def action_finish(self) -> None:
+        if self.state != SnakeGameState.GAMEOVER:
+            return
+        
         self.timer.stop()
         self.app.query_one("ContentSwitcher.MenuHolder").current = "signup"
         
@@ -232,24 +251,29 @@ class SnakeMenu(Static):
             self.timeboard = Digits("000")
             yield self.timeboard
 
-            yield Label(" \n ", id="status")
+            yield Static(" \n ", id="status")
     
     def on_mount(self) -> None:
         self.scoreboard.border_title = "Score:"
         self.timeboard.border_title = "Time:"
     
-    def start(self) -> None:
+    def setup(self) -> None:
         game = self.query_one(SnakeGame)
-        game.start()
+        game.setup()
     
     def on_snake_game_score_changed(self, message: SnakeGame.ScoreChanged):
         self.scoreboard.update(f"{message.score:03}")
     
+    def on_snake_game_game_setup(self, message: SnakeGame.GameSetup):
+        s = self.query_one("#status")
+        s.update("Guide the snake to pick up food to score points.\n" \
+            "Control the snake with [b][u]WASD[/u][/b] or the [b][u]ARROW[/u][/b] keys.\n" \
+            "Press the movement keys to begin.")
+    
     def on_snake_game_game_started(self, message:SnakeGame.GameStarted):
         s = self.query_one("#status")
         s.update(" \n ")
-        self.notify("Started")
 
     def on_snake_game_game_ended(self, message: SnakeGame.GameEnded):
         s = self.query_one("#status")
-        s.update("Game Over!\nPress [b]R[/b] to retry, or [b]ENTER[/b] to quit.")
+        s.update("Game Over!\n\nPress [u][b]R[/u][/b] to retry, or [u][b]ENTER[/u][/b] to finish playing.")

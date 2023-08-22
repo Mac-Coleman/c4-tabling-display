@@ -131,3 +131,7 @@ Digits {
 Label {
 	color: white;
 }
+
+Static {
+	color: white;
+}
