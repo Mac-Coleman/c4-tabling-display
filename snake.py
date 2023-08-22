@@ -2,7 +2,8 @@ from textual.binding import Binding
 from textual.reactive import reactive
 from textual.app import ComposeResult
 from textual.widget import Widget
-from textual.widgets import Static, Label
+from textual.widgets import Static, Label, Digits
+from textual.message import Message
 from textual.containers import Middle, Center
 from textual.color import Color
 
@@ -64,6 +65,13 @@ class SnakeGame(Static, can_focus=True):
         Binding("space, enter", "finish", "Finish the game", show=False)
     ]
 
+    class ScoreChanged(Message):
+        """A message sent when the score is changed."""
+
+        def __init__(self, score):
+            self.score = score
+            super().__init__()
+
     def compose(self) -> ComposeResult:
 
         row = [None] * 15
@@ -97,6 +105,7 @@ class SnakeGame(Static, can_focus=True):
             pass
         self.timer = self.set_interval(self.interval, callback=self.update)
         self.focus()
+        self.draw()
 
     def get_block_at(self, position):
         return self.grid[position[0]][position[1]]
@@ -147,6 +156,7 @@ class SnakeGame(Static, can_focus=True):
             self.interval *= 0.95
             self.timer = self.set_interval(self.interval, callback=self.update)
             self.food = (random.randint(0, 14), random.randint(0, 14))
+            self.post_message(self.ScoreChanged(self.score))
         
         if not found_food:
             self.get_block_at(self.snake_list.pop())
@@ -185,6 +195,8 @@ class SnakeMenu(Static):
                 yield Label("Ready... ", id="ready", classes="prepare")
                 yield Label("Set... ", id="set", classes="prepare")
                 yield Label("Go!", id="go", classes="prepare")
+            self.scoreboard = Digits("000")
+            yield self.scoreboard
     
     def start(self) -> None:
         r = self.query_one("#ready")
@@ -201,3 +213,7 @@ class SnakeMenu(Static):
 
         game = self.query_one(SnakeGame)
         game.start()
+    
+    def on_snake_game_score_changed(self, message: SnakeGame.ScoreChanged):
+        self.notify(f"Score: {message.score}")
+        self.scoreboard.update(f"{message.score:03}")

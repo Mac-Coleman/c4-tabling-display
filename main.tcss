@@ -120,3 +120,8 @@ Label.prepare {
 	color: white;
 	opacity: 0.0;
 }
+
+Digits {
+	color: white;
+	width: auto;
+}
