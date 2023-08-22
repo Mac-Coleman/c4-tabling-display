@@ -123,5 +123,7 @@ Label.prepare {
 
 Digits {
 	color: white;
-	width: auto;
+	width: 20;
+	text-align: right;
+	border: white round;
 }

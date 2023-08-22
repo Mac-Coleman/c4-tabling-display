@@ -216,26 +216,17 @@ class SnakeMenu(Static):
         with Middle(classes="FitShort"):
             with Center(classes="FitShort"):
                 yield C4Logo()
-            with Center(classes="FitShort"):
-                yield Label("Ready... ", id="ready", classes="prepare")
-                yield Label("Set... ", id="set", classes="prepare")
-                yield Label("Go!", id="go", classes="prepare")
             self.scoreboard = Digits("000")
             yield self.scoreboard
+
+            self.timeboard = Digits("000")
+            yield self.timeboard
+    
+    def on_mount(self) -> None:
+        self.scoreboard.border_title = "Score:"
+        self.timeboard.border_title = "Time:"
     
     def start(self) -> None:
-        r = self.query_one("#ready")
-        s = self.query_one("#set")
-        g = self.query_one("#go")
-
-        r.styles.animate("opacity", value=1.0, duration=0.25)
-        s.styles.animate("opacity", value=1.0, duration=0.25, delay=1.5)
-        g.styles.animate("opacity", value=1.0, duration=0.25, delay=3)
-        
-        r.styles.animate("opacity", value=0.0, duration=2, delay=4.5)
-        s.styles.animate("opacity", value=0.0, duration=2, delay=4.5)
-        g.styles.animate("opacity", value=0.0, duration=2, delay=4.5)
-
         game = self.query_one(SnakeGame)
         game.start()
     
