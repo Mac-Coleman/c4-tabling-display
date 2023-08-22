@@ -71,6 +71,14 @@ class SnakeGame(Static, can_focus=True):
         def __init__(self, score):
             self.score = score
             super().__init__()
+    
+    class GameEnded(Message):
+        """A message sent when the game ends."""
+
+        def __init__(self, score, game_time):
+            self.score = score
+            self.game_time = game_time
+            super().__init__()
 
     def compose(self) -> ComposeResult:
 
@@ -94,6 +102,7 @@ class SnakeGame(Static, can_focus=True):
         self.next_direction = self.direction
         self.food = (7, 7)
         self.score = 0
+        self.post_message(self.ScoreChanged(self.score)) # Make sure that score update is sent
 
         for block in self.snake_list:
             self.grid[block[0]][block[1]].set_type(SnakeCellType.SNAKE)
@@ -138,10 +147,12 @@ class SnakeGame(Static, can_focus=True):
 
         if self.head[0] < 0 or self.head[0] >= 15 or self.head[1] < 0 or self.head[1] >= 15:
             self.timer.stop()
+            self.post_message(self.GameEnded(self.score, 0))
             return
         
         if self.head in self.snake_list:
             self.timer.stop()
+            self.post_message(self.GameEnded(self.score, 0))
         
         self.snake_list.insert(0, self.head)
 
@@ -213,5 +224,7 @@ class SnakeMenu(Static):
         game.start()
     
     def on_snake_game_score_changed(self, message: SnakeGame.ScoreChanged):
-        self.notify(f"Score: {message.score}")
         self.scoreboard.update(f"{message.score:03}")
+
+    def on_snake_game_game_ended(self, message: SnakeGame.GameEnded):
+        self.notify(f"Game ended with score {message.score} and time {message.game_time}")
