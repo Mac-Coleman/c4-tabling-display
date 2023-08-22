@@ -23,6 +23,12 @@ class SnakeCellType(Enum):
     BACKGROUND = 0
     FOOD = 1
     SNAKE = 2
+    GAMEOVER_SNAKE = 3
+
+class SnakeGameState(Enum):
+    WAITING = 0
+    PLAYING = 1
+    GAMEOVER = 2
 
 class SnakeCell(Widget):
 
@@ -45,6 +51,10 @@ class SnakeCell(Widget):
     def render(self):
         if self.cell_type == SnakeCellType.SNAKE:
             self.styles.color = "#FFFFFF"
+            return "████\n████"
+        
+        if self.cell_type == SnakeCellType.GAMEOVER_SNAKE:
+            self.styles.color = "#FF5577"
             return "████\n████"
         
         if self.cell_type == SnakeCellType.FOOD:
@@ -102,6 +112,7 @@ class SnakeGame(Static, can_focus=True):
         self.next_direction = self.direction
         self.food = (7, 7)
         self.score = 0
+        self.state = SnakeGameState.PLAYING
         self.post_message(self.ScoreChanged(self.score)) # Make sure that score update is sent
 
         for block in self.snake_list:
@@ -124,8 +135,10 @@ class SnakeGame(Static, can_focus=True):
         
         self.get_block_at(self.food).set_type(SnakeCellType.FOOD)
         
+        cell_type = SnakeCellType.SNAKE if self.state != SnakeGameState.GAMEOVER else SnakeCellType.GAMEOVER_SNAKE
+
         for position in self.snake_list:
-            self.get_block_at(position).set_type(SnakeCellType.SNAKE)
+            self.get_block_at(position).set_type(cell_type)
     
     
     def update(self):
@@ -148,11 +161,14 @@ class SnakeGame(Static, can_focus=True):
         if self.head[0] < 0 or self.head[0] >= 15 or self.head[1] < 0 or self.head[1] >= 15:
             self.timer.stop()
             self.post_message(self.GameEnded(self.score, 0))
+            self.state = SnakeGameState.GAMEOVER
+            self.draw()
             return
         
         if self.head in self.snake_list:
             self.timer.stop()
             self.post_message(self.GameEnded(self.score, 0))
+            self.state = SnakeGameState.GAMEOVER
         
         self.snake_list.insert(0, self.head)
 
