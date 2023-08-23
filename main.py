@@ -8,6 +8,7 @@ from ascii_image import AsciiImage
 from logo import C4Logo
 from signup_menu import SignupMenu
 from qr_code_menu import QrCodeMenu
+from snake import SnakeMenu, SnakeGame
 
 import random
 import argparse
@@ -24,7 +25,7 @@ except ImportError as e:
 class TablingApp(App):
     """Displays the tabling app."""
 
-    CSS_PATH = "main.css"
+    CSS_PATH = "main.tcss"
 
     BINDINGS = [
         Binding("escape", "switch_qr_code_display()", 'display_qr_code', show=False, priority=True),
@@ -32,19 +33,44 @@ class TablingApp(App):
 
 
     def compose(self) -> ComposeResult:
+
+        self.current_user = ("EMPTY", "EMPTY")
         
         self.qr_code = False
         with Static("", classes="Background") as b:
             numbers = 5000
             l = " ".join(["{:02X}".format(random.randint(0,255)) for x in range(numbers)])
             b.update(l)
-            with ContentSwitcher(initial="signup", classes="MenuHolder"):
+            with ContentSwitcher(initial="signup", id="menus", classes="MenuHolder"):
                 yield SignupMenu(id="signup")
                 yield QrCodeMenu(id="qr-code")
+                yield SnakeMenu(id="snake")
+    
+    def on_signup_menu_name_entered(self, message: SignupMenu.NameEntered):
+        self.current_user = (message.name, message.email_address)
+        with open("tabling_names.csv", 'a') as file:
+            file.write(f"{message.name},{message.email_address}\n")
+        
+        self.query_one("#menus").current = "snake"
+        self.query_one("#snake").setup()
+        
+    def on_snake_game_game_ended(self, message: SnakeGame.GameEnded):
+        n = self.current_user[0]
+        e = self.current_user[1]
+
+        with open("tabling_scores.csv", 'a') as file:
+            file.write(f"{n},{e},{message.score},{message.game_time}\n")
+    
+    def on_snake_game_game_quit(self, message: SnakeGame.GameQuit):
+        n = self.current_user[0].split(" ")[0]
+
+        self.query_one("#menus").current = "signup"
+        self.query_one("#signup").display_thanks(n)
 
     def action_switch_qr_code_display(self, params=None):
         if self.qr_code:
             self.query_one("ContentSwitcher.MenuHolder").current = "signup"
+            self.query_one("#signup").name_input.focus()
         else:
             self.query_one("ContentSwitcher.MenuHolder").current = "qr-code"
 
