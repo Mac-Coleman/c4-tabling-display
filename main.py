@@ -10,6 +10,8 @@ from signup_menu import SignupMenu
 from qr_code_menu import QrCodeMenu
 from snake import SnakeMenu, SnakeGame
 
+from backgrounds.background_default import DefaultBackground
+
 import random
 import argparse
 import sys
@@ -37,14 +39,11 @@ class TablingApp(App):
         self.current_user = ("EMPTY", "EMPTY")
         
         self.qr_code = False
-        with Static("", classes="Background") as b:
-            numbers = 5000
-            l = " ".join(["{:02X}".format(random.randint(0,255)) for x in range(numbers)])
-            b.update(l)
-            with ContentSwitcher(initial="signup", id="menus", classes="MenuHolder"):
-                yield SignupMenu(id="signup")
-                yield QrCodeMenu(id="qr-code")
-                yield SnakeMenu(id="snake")
+        yield DefaultBackground()
+        with ContentSwitcher(initial="signup", id="menus", classes="MenuHolder"):
+            yield SignupMenu(id="signup")
+            yield QrCodeMenu(id="qr-code")
+            yield SnakeMenu(id="snake")
     
     def on_signup_menu_name_entered(self, message: SignupMenu.NameEntered):
         self.current_user = (message.name, message.email_address)
