@@ -1,9 +1,11 @@
 from textual import on
 from textual.widgets import Static
 from textual import events
-import random
 
-class DefaultBackground(Static):
+import random
+from .background import BackgroundBase, BackgroundMetaClass
+
+class DefaultBackground(Static, BackgroundBase, metaclass=BackgroundMetaClass):
 
     DEFAULT_CSS = """
     DefaultBackground {
@@ -13,6 +15,18 @@ class DefaultBackground(Static):
 	    width: 1fr;
     }
     """
+
+    def author(self) -> str:
+        return "Mac Coleman"
+    
+    def title(self) -> str:
+        return "Purple Hexadecimal"
+    
+    def start(self) -> None:
+        pass
+
+    def stop(self) -> None:
+        pass
     
     @on(events.Resize)
     def on_event_resize(self, message: events.Resize) -> None:

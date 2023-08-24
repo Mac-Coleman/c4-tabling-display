@@ -1,6 +1,7 @@
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 
 from textual.message import Message
+from textual.message_pump import _MessagePumpMeta
 
 class BackgroundBase(ABC):
     """
@@ -54,6 +55,20 @@ class BackgroundBase(ABC):
         jarringly cutting from one background to the next.
         """
         pass
+
+class BackgroundMetaClass(ABCMeta, _MessagePumpMeta):
+    """
+    Necessary because Python does *not* automatically generate these metaclasses
+    when the abstract base classes are concerned. Check http://www.phyast.pitt.edu/~micheles/python/metatype.html
+    to learn more about why. This is really not necessary to know anything about, but it just makes it so that classes can extend
+    any subclass of textual's MessagePump *and* this abstract base class.
+
+    If you do not set metaclass=BackgroundMetaClass in your custom background's class, attempting to use it will cause a TypeError like this:
+
+        'TypeError: metaclass conflict:
+        the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases'
+    """
+    pass
 
 if __name__ == "__main__":
     print(BackgroundBase.__class__)
