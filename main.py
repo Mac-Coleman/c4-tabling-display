@@ -12,9 +12,7 @@ from snake import SnakeMenu, SnakeGame
 
 from backgrounds.background_default import DefaultBackground
 
-import random
 import argparse
-import sys
 
 try:
     import segno

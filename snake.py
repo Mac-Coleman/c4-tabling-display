@@ -119,6 +119,7 @@ class SnakeGame(Static, can_focus=True):
 
         row = [None] * 15
         self.grid = [copy.deepcopy(row) for i in range(15)]
+        # A deep copy is needed as otherwise the grid would have only shallow copies of [None] * 15
         
         for i in range(15 * 15):
             s = SnakeCell()
