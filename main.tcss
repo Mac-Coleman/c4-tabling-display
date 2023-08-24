@@ -136,10 +136,6 @@ Label {
 	color: white;
 }
 
-Static {
-	color: white;
-}
-
 #score-container {
 	height: 20;
 	width: 20;
