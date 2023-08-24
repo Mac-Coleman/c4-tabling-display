@@ -11,7 +11,6 @@ class DefaultBackground(Static):
 	    color: #320045;
 	    height: 1fr;
 	    width: 1fr;
-        layer: background;
     }
     """
     

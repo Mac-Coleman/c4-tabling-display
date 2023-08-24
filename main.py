@@ -37,7 +37,8 @@ class TablingApp(App):
         self.current_user = ("EMPTY", "EMPTY")
         
         self.qr_code = False
-        yield DefaultBackground()
+        with ContentSwitcher(initial="default", id="backgrounds", classes="BackgroundHolder"):
+            yield DefaultBackground(id="default")
         with ContentSwitcher(initial="signup", id="menus", classes="MenuHolder"):
             yield SignupMenu(id="signup")
             yield QrCodeMenu(id="qr-code")

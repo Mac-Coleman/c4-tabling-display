@@ -34,6 +34,14 @@ ContentSwitcher.MenuHolder {
 	height: auto;
 	width: auto;
 	background: #00f0;
+	layer: foreground;
+}
+
+ContentSwitcher.BackgroundHolder {
+	align: center middle;
+	height: 1fr;
+	width: 1fr;
+	layer: background;
 }
 
 AsciiImage {
@@ -60,7 +68,6 @@ SignupMenu {
 	width: 60;
 	padding: 1 4;
 	background: $primary-background-darken-1;
-	layer: foreground;
 }
 
 Static.QrCodeContainer {
@@ -76,7 +83,6 @@ QrCodeMenu {
 	width: auto;
 	layout: horizontal;
 	border: white hkey;
-	layer: foreground;
 }
 
 Middle.FitShort {
@@ -105,7 +111,6 @@ SnakeMenu {
 	padding: 1 4;
 	border: white hkey;
 	layout: horizontal;
-	layer: foreground;
 }
 
 SnakeCell {
