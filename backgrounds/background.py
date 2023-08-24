@@ -69,6 +69,3 @@ class BackgroundMetaClass(ABCMeta, _MessagePumpMeta):
         the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases'
     """
     pass
-
-if __name__ == "__main__":
-    print(BackgroundBase.__class__)
