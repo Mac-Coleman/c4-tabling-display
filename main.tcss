@@ -2,6 +2,7 @@ Screen {
 	background: $primary-background-darken-2;
 	align: center middle;
 	border: round #BB66FF;
+	layers: background foreground;
 }
 
 Input {
@@ -33,6 +34,14 @@ ContentSwitcher.MenuHolder {
 	height: auto;
 	width: auto;
 	background: #00f0;
+	layer: foreground;
+}
+
+ContentSwitcher.BackgroundHolder {
+	align: center middle;
+	height: 1fr;
+	width: 1fr;
+	layer: background;
 }
 
 AsciiImage {
@@ -129,10 +138,6 @@ Digits {
 }
 
 Label {
-	color: white;
-}
-
-Static {
 	color: white;
 }
 
