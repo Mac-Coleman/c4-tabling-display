@@ -10,6 +10,8 @@ from signup_menu import SignupMenu
 from qr_code_menu import QrCodeMenu
 from snake import SnakeMenu, SnakeGame
 
+from backgrounds.background import BackgroundBase
+
 from backgrounds.background_default import DefaultBackground
 
 import argparse
@@ -31,6 +33,10 @@ class TablingApp(App):
         Binding("escape", "switch_qr_code_display()", 'display_qr_code', show=False, priority=True),
     ]
 
+    def __init__(self, signup_only: bool, backgrounds: dict[str, BackgroundBase]):
+        self.signup_only = signup_only
+        self.backgrounds = backgrounds
+        super().__init__()
 
     def compose(self) -> ComposeResult:
 
@@ -38,7 +44,11 @@ class TablingApp(App):
         
         self.qr_code = False
         with ContentSwitcher(initial="default", id="backgrounds", classes="BackgroundHolder"):
-            yield DefaultBackground(id="default")
+
+            for i, (id, background_class) in enumerate(self.backgrounds.items()):
+                yield background_class(id=id)
+                # Add all of the backgrounds to the app.
+            
         with ContentSwitcher(initial="signup", id="menus", classes="MenuHolder"):
             yield SignupMenu(id="signup")
             yield QrCodeMenu(id="qr-code")
@@ -180,7 +190,12 @@ def write_qr_code(data: str, density: int, allow_micro=False):
         return output
 
 def handle_run(args):
-    TablingApp().run()
+
+    available_backgrounds = {
+        "default" : DefaultBackground
+    }
+
+    TablingApp(False, available_backgrounds).run()
 
 def handle_qr_codes(args):
 
