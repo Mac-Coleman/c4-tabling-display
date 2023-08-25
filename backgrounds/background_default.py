@@ -1,5 +1,6 @@
 from textual import on
 from textual.widgets import Static
+from textual.geometry import Size
 from textual import events
 
 import random
@@ -15,6 +16,10 @@ class DefaultBackground(Static, BackgroundBase, metaclass=BackgroundMetaClass):
 	    width: 1fr;
     }
     """
+
+    def __init__(self, id=None):
+        self.old_size = Size()
+        super().__init__(id=id)
 
     def author(self) -> str:
         return "Mac Coleman"
@@ -36,8 +41,11 @@ class DefaultBackground(Static, BackgroundBase, metaclass=BackgroundMetaClass):
     
     @on(events.Resize)
     def on_event_resize(self, message: events.Resize) -> None:
+        if (message.size == self.old_size):
+            return None
 
         self.update_hex_text(message.size.width, message.size.height)
+        self.old_size = message.size
     
     def update_hex_text(self, width: int, height: int) -> str:
         numbers = height * (width//3)
@@ -53,6 +61,10 @@ class DefaultBackgroundRed(Static, BackgroundBase, metaclass=BackgroundMetaClass
 	    width: 1fr;
     }
     """
+
+    def __init__(self, id=None):
+        self.old_size = Size()
+        super().__init__(id=id)
 
     def author(self) -> str:
         return "Mac Coleman"
@@ -75,8 +87,11 @@ class DefaultBackgroundRed(Static, BackgroundBase, metaclass=BackgroundMetaClass
     
     @on(events.Resize)
     def on_event_resize(self, message: events.Resize) -> None:
+        if (message.size == self.old_size):
+            return None
 
         self.update_hex_text(message.size.width, message.size.height)
+        self.old_size = message.size
     
     def update_hex_text(self, width: int, height: int) -> str:
         numbers = height * (width//3)
