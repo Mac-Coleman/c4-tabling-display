@@ -63,26 +63,28 @@ class TablingApp(App):
             yield QrCodeMenu(id="qr-code")
             yield SnakeMenu(id="snake")
         
-        self.background_switcher.query_one(f"#{self.current_background_id}").start()
+        self.background_switcher.visible_content.start()
         self.background_timer = self.set_timer(10, self.next_background)
 
-        background = self.background_switcher.query_one(f"#{self.current_background_id}")
-        self.query_one("#_default").border_subtitle = f"[i]{background.title()}[/i] by {background.author()}"
+        title = self.background_switcher.visible_content.title()
+        author = self.background_switcher.visible_content.author()
+        self.query_one("#_default").border_subtitle = f"[i]{title}[/i] by {author}"
     
     def next_background(self):
         """Tell the current background to stop."""
-        self.background_switcher.query_one(f"#{self.current_background_id}").stop()
+        self.background_switcher.visible_content.stop()
     
     @on(BackgroundBase.BackgroundEnded)
     def background_ended(self, message: BackgroundBase.BackgroundEnded) -> None:
         self.current_background_index = (self.current_background_index + 1) % len(self.background_ids)
         self.current_background_id = self.background_ids[self.current_background_index]
         self.background_switcher.current = self.current_background_id
-        self.background_switcher.query_one(f"#{self.current_background_id}").start()
+        self.background_switcher.visible_content.start()
         self.background_timer = self.set_timer(10, self.next_background)
 
-        background = self.background_switcher.query_one(f"#{self.current_background_id}")
-        self.query_one("#_default").border_subtitle = f"[i]{background.title()}[/i] by {background.author()}"
+        title = self.background_switcher.visible_content.title()
+        author = self.background_switcher.visible_content.author()
+        self.query_one("#_default").border_subtitle = f"[i]{title}[/i] by {author}"
     
     def on_signup_menu_name_entered(self, message: SignupMenu.NameEntered):
         self.current_user = (message.name, message.email_address)
