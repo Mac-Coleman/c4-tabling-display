@@ -1,3 +1,4 @@
+from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widget import Widget
@@ -12,7 +13,7 @@ from snake import SnakeMenu, SnakeGame
 
 from backgrounds.background import BackgroundBase
 
-from backgrounds.background_default import DefaultBackground
+from backgrounds.background_default import DefaultBackground, DefaultBackgroundRed
 
 import argparse
 
@@ -36,6 +37,11 @@ class TablingApp(App):
     def __init__(self, signup_only: bool, backgrounds: dict[str, BackgroundBase]):
         self.signup_only = signup_only
         self.backgrounds = backgrounds
+
+        self.background_switcher = None
+        self.background_ids = list(backgrounds.keys())
+        self.current_background_index = 0
+        self.current_background_id = self.background_ids[0]
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -43,16 +49,40 @@ class TablingApp(App):
         self.current_user = ("EMPTY", "EMPTY")
         
         self.qr_code = False
-        with ContentSwitcher(initial="default", id="backgrounds", classes="BackgroundHolder"):
+        with ContentSwitcher(initial="default", id="backgrounds", classes="BackgroundHolder") as background_switcher:
+            self.background_switcher = background_switcher
 
             for i, (id, background_class) in enumerate(self.backgrounds.items()):
                 yield background_class(id=id)
                 # Add all of the backgrounds to the app.
             
+            background_switcher.current = self.current_background_id
+            
         with ContentSwitcher(initial="signup", id="menus", classes="MenuHolder"):
             yield SignupMenu(id="signup")
             yield QrCodeMenu(id="qr-code")
             yield SnakeMenu(id="snake")
+        
+        self.background_switcher.query_one(f"#{self.current_background_id}").start()
+        self.background_timer = self.set_timer(10, self.next_background)
+
+        background = self.background_switcher.query_one(f"#{self.current_background_id}")
+        self.query_one("#_default").border_subtitle = f"[i]{background.title()}[/i] by {background.author()}"
+    
+    def next_background(self):
+        """Tell the current background to stop."""
+        self.background_switcher.query_one(f"#{self.current_background_id}").stop()
+    
+    @on(BackgroundBase.BackgroundEnded)
+    def background_ended(self, message: BackgroundBase.BackgroundEnded) -> None:
+        self.current_background_index = (self.current_background_index + 1) % len(self.background_ids)
+        self.current_background_id = self.background_ids[self.current_background_index]
+        self.background_switcher.current = self.current_background_id
+        self.background_switcher.query_one(f"#{self.current_background_id}").start()
+        self.background_timer = self.set_timer(10, self.next_background)
+
+        background = self.background_switcher.query_one(f"#{self.current_background_id}")
+        self.query_one("#_default").border_subtitle = f"[i]{background.title()}[/i] by {background.author()}"
     
     def on_signup_menu_name_entered(self, message: SignupMenu.NameEntered):
         self.current_user = (message.name, message.email_address)
@@ -192,7 +222,8 @@ def write_qr_code(data: str, density: int, allow_micro=False):
 def handle_run(args):
 
     available_backgrounds = {
-        "default" : DefaultBackground
+        "default" : DefaultBackground,
+        "red" : DefaultBackgroundRed
     }
 
     TablingApp(False, available_backgrounds).run()
