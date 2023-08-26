@@ -231,7 +231,20 @@ def handle_run(args):
         "rainbow_hex" : RainbowHex
     }
 
-    TablingApp(False, available_backgrounds).run()
+    selected_backgrounds = {}
+
+    if args.no_backgrounds == True:
+        selected_backgrounds["default"] = DefaultBackground
+    elif args.backgrounds != None:
+        for name in args.backgrounds:
+            try:
+                selected_backgrounds[name.lower()] = available_backgrounds[name.lower()]
+            except KeyError as e:
+                print(f"'{name}' is not a valid background.")
+    else:
+        selected_backgrounds = available_backgrounds
+
+    TablingApp(False, selected_backgrounds).run()
 
 def handle_qr_codes(args):
 
