@@ -1,3 +1,4 @@
+from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widget import Widget
@@ -10,7 +11,10 @@ from signup_menu import SignupMenu
 from qr_code_menu import QrCodeMenu
 from snake import SnakeMenu, SnakeGame
 
-from backgrounds.background_default import DefaultBackground
+from backgrounds.background import BackgroundBase
+
+from backgrounds.background_default import DefaultBackground, DefaultBackgroundRed
+from backgrounds.background_rainbow_hex import RainbowHex
 
 import argparse
 
@@ -31,18 +35,59 @@ class TablingApp(App):
         Binding("escape", "switch_qr_code_display()", 'display_qr_code', show=False, priority=True),
     ]
 
+    def __init__(self, signup_only: bool, backgrounds: dict[str, BackgroundBase]):
+        self.signup_only = signup_only
+        self.backgrounds = backgrounds
+
+        self.background_switcher = None
+        self.background_ids = list(backgrounds.keys())
+        self.current_background_index = 0
+        self.current_background_id = self.background_ids[0]
+        self.background_switch_time = 45
+        super().__init__()
 
     def compose(self) -> ComposeResult:
 
         self.current_user = ("EMPTY", "EMPTY")
         
         self.qr_code = False
-        with ContentSwitcher(initial="default", id="backgrounds", classes="BackgroundHolder"):
-            yield DefaultBackground(id="default")
+        with ContentSwitcher(initial=self.current_background_id, id="backgrounds", classes="BackgroundHolder") as background_switcher:
+            self.background_switcher = background_switcher
+
+            for i, (id, background_class) in enumerate(self.backgrounds.items()):
+                yield background_class(id=id)
+                # Add all of the backgrounds to the app.
+            
         with ContentSwitcher(initial="signup", id="menus", classes="MenuHolder"):
             yield SignupMenu(id="signup")
             yield QrCodeMenu(id="qr-code")
             yield SnakeMenu(id="snake")
+        
+        self.background_switcher.current = self.current_background_id
+        self.background_switcher.visible_content.start()
+        
+        if len(self.backgrounds) > 1:
+            self.background_timer = self.set_timer(self.background_switch_time, self.next_background)
+
+        title = self.background_switcher.visible_content.title()
+        author = self.background_switcher.visible_content.author()
+        self.query_one("#_default").border_subtitle = f"[i]{title}[/i] by {author}"
+    
+    def next_background(self):
+        """Tell the current background to stop."""
+        self.background_switcher.visible_content.stop()
+    
+    @on(BackgroundBase.BackgroundEnded)
+    def background_ended(self, message: BackgroundBase.BackgroundEnded) -> None:
+        self.current_background_index = (self.current_background_index + 1) % len(self.background_ids)
+        self.current_background_id = self.background_ids[self.current_background_index]
+        self.background_switcher.current = self.current_background_id
+        self.background_switcher.visible_content.start()
+        self.background_timer = self.set_timer(self.background_switch_time, self.next_background)
+
+        title = self.background_switcher.visible_content.title()
+        author = self.background_switcher.visible_content.author()
+        self.query_one("#_default").border_subtitle = f"[i]{title}[/i] by {author}"
     
     def on_signup_menu_name_entered(self, message: SignupMenu.NameEntered):
         self.current_user = (message.name, message.email_address)
@@ -180,7 +225,27 @@ def write_qr_code(data: str, density: int, allow_micro=False):
         return output
 
 def handle_run(args):
-    TablingApp().run()
+
+    available_backgrounds = {
+        "default" : DefaultBackground,
+        "red" : DefaultBackgroundRed,
+        "rainbow_hex" : RainbowHex
+    }
+
+    selected_backgrounds = {}
+
+    if args.no_backgrounds == True:
+        selected_backgrounds["default"] = DefaultBackground
+    elif args.backgrounds != None:
+        for name in args.backgrounds:
+            try:
+                selected_backgrounds[name.lower()] = available_backgrounds[name.lower()]
+            except KeyError as e:
+                print(f"'{name}' is not a valid background.")
+    else:
+        selected_backgrounds = available_backgrounds
+
+    TablingApp(False, selected_backgrounds).run()
 
 def handle_qr_codes(args):
 

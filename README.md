@@ -27,8 +27,10 @@ To try it out, simply clone this repository, install `textual` and `segno` with 
 * `code` - generate QR codes to display in the tabling app
 
 ## Usage: Run
-Arguments are currently reserved for the Run command but their implementation is not yet finished.
+Arguments are currently reserved for the Run command but their implementation is not yet fully complete.
 The `run` subcommand will always run the tabling app.
+* `-n`, `--no-backgrounds` : disable the backgrounds and only use the default purple hexadecimal background.
+* `-b BACKGROUND[...]`, `--backgrounds BACKGROUND[...]` : specify one or more backgrounds to use when running the tabling program.
 
 ## Usage: Code
 * `data`: the data that should be encoded in the QR code.
