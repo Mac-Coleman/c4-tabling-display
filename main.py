@@ -43,6 +43,7 @@ class TablingApp(App):
         self.background_ids = list(backgrounds.keys())
         self.current_background_index = 0
         self.current_background_id = self.background_ids[0]
+        self.background_switch_time = 45
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -66,7 +67,7 @@ class TablingApp(App):
         self.background_switcher.visible_content.start()
         
         if len(self.backgrounds) > 1:
-            self.background_timer = self.set_timer(10, self.next_background)
+            self.background_timer = self.set_timer(self.background_switch_time, self.next_background)
 
         title = self.background_switcher.visible_content.title()
         author = self.background_switcher.visible_content.author()
@@ -82,7 +83,7 @@ class TablingApp(App):
         self.current_background_id = self.background_ids[self.current_background_index]
         self.background_switcher.current = self.current_background_id
         self.background_switcher.visible_content.start()
-        self.background_timer = self.set_timer(10, self.next_background)
+        self.background_timer = self.set_timer(self.background_switch_time, self.next_background)
 
         title = self.background_switcher.visible_content.title()
         author = self.background_switcher.visible_content.author()
