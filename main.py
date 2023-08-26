@@ -14,6 +14,7 @@ from snake import SnakeMenu, SnakeGame
 from backgrounds.background import BackgroundBase
 
 from backgrounds.background_default import DefaultBackground, DefaultBackgroundRed
+from backgrounds.background_rainbow_hex import RainbowHex
 
 import argparse
 
@@ -49,22 +50,23 @@ class TablingApp(App):
         self.current_user = ("EMPTY", "EMPTY")
         
         self.qr_code = False
-        with ContentSwitcher(initial="default", id="backgrounds", classes="BackgroundHolder") as background_switcher:
+        with ContentSwitcher(initial=self.current_background_id, id="backgrounds", classes="BackgroundHolder") as background_switcher:
             self.background_switcher = background_switcher
 
             for i, (id, background_class) in enumerate(self.backgrounds.items()):
                 yield background_class(id=id)
                 # Add all of the backgrounds to the app.
             
-            background_switcher.current = self.current_background_id
-            
         with ContentSwitcher(initial="signup", id="menus", classes="MenuHolder"):
             yield SignupMenu(id="signup")
             yield QrCodeMenu(id="qr-code")
             yield SnakeMenu(id="snake")
         
+        self.background_switcher.current = self.current_background_id
         self.background_switcher.visible_content.start()
-        self.background_timer = self.set_timer(10, self.next_background)
+        
+        if len(self.backgrounds) > 1:
+            self.background_timer = self.set_timer(10, self.next_background)
 
         title = self.background_switcher.visible_content.title()
         author = self.background_switcher.visible_content.author()
@@ -225,7 +227,8 @@ def handle_run(args):
 
     available_backgrounds = {
         "default" : DefaultBackground,
-        "red" : DefaultBackgroundRed
+        "red" : DefaultBackgroundRed,
+        "rainbow_hex" : RainbowHex
     }
 
     TablingApp(False, available_backgrounds).run()

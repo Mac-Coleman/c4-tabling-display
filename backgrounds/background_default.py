@@ -37,7 +37,6 @@ class DefaultBackground(Static, BackgroundBase, metaclass=BackgroundMetaClass):
     
     def finish(self) -> None:
         self.post_message(BackgroundBase.BackgroundEnded())
-
     
     @on(events.Resize)
     def on_event_resize(self, message: events.Resize) -> None:
