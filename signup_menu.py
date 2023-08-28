@@ -31,6 +31,18 @@ class SignupMenu(Static):
     
     @on(Input.Submitted, "#email")
     def email_entered(self, message: Input.Submitted):
+        if self.name_input.value.strip() == "":
+            self.name_input.focus()
+            self.thanks.update("Please enter your name!")
+            self.set_timer(5.0, self.clear_text)
+            return
+
+        if self.email_input.value.strip() == "":
+            self.email_input.focus()
+            self.thanks.update("Please enter your email address!")
+            self.set_timer(5.0, self.clear_text)
+            return
+
         self.post_message(self.NameEntered(self.name_input.value, self.email_input.value))
 
         self.name_input.value = ""
