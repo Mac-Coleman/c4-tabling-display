@@ -31,6 +31,50 @@ class SignupMenu(Static):
     
     @on(Input.Submitted, "#email")
     def email_entered(self, message: Input.Submitted):
+        # we're doing some validation here
+        # tl;dr: we're checking for
+        # name isn't empty
+        # email isn't empty
+        # email ends with @cornellcollege.edu OR email is in the student email format (like msmith26)
+        # if it's not, then we're gonna *politely* tell the user to fix it
+        # if it is, let's let them play snake!
+        
+        if self.name_input.value.strip() == "":
+            self.name_input.focus()
+            self.thanks.update("Please enter your name!")
+            self.thanks.styles.opacity = "100%"
+            self.set_timer(5.0, self.clear_text)
+            self.thanks.styles.animate("opacity", value=0.0, duration=1.0, delay=4.0)
+            return
+
+        if self.email_input.value.strip() == "":
+            self.email_input.focus()
+            self.thanks.update("Please enter your email address!")
+            self.thanks.styles.opacity = "100%"
+            self.set_timer(5.0, self.clear_text)
+            self.thanks.styles.animate("opacity", value=0.0, duration=1.0, delay=4.0)
+            return
+        
+        valid = False
+
+        if not self.email_input.value.strip().endswith("@cornellcollege.edu"):
+            # it's okay! we just need to check if the email ends with 2 digits
+            # if it does, then it's probably a valid email address FOR A STUDENT
+            if self.email_input.value.strip()[-2:].isdigit():
+                valid = True
+        
+        if not valid and self.email_input.value.strip().endswith("@cornellcollege.edu"):
+            # we're just gonna let this go through...
+            valid = True
+        
+        if not valid:
+            self.email_input.focus()
+            self.thanks.update("Please enter a valid Cornell College email address!")
+            self.thanks.styles.opacity = "100%"
+            self.set_timer(5.0, self.clear_text)
+            self.thanks.styles.animate("opacity", value=0.0, duration=1.0, delay=4.0)
+            return
+
         self.post_message(self.NameEntered(self.name_input.value, self.email_input.value))
 
         self.name_input.value = ""
