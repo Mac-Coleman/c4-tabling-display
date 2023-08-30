@@ -261,6 +261,11 @@ def handle_qr_codes(args):
     q = write_qr_code(args.data, args.density, allow_micro=args.allow_micro)
     print("QR code successfully written.")
 
+    print("Writing link config file.")
+    with open("assets/link_config.txt", "w") as file:
+        file.write(args.data) # Write the data to the text file
+    print("Successfully wrote link config file")
+
     if len(q.split('\n')) >= 28:
         print("WARNING: This QR code may be too big to properly display!")
         print("Note: If this QR code displays improperly or is cut off, you might be trying to encode too much data.")
