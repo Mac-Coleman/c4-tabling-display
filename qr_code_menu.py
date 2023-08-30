@@ -20,8 +20,9 @@ class QrCodeMenu(Static):
         with Middle(classes="FitShort"):
             yield C4Logo()
             yield Label(message_text, classes="Prompt")
-            with Static() as s:
-                yield Label("LINK GOES HERE", classes="Prompt")
+            with Static():
+                text = open("assets/link_config.txt", "r").read()
+                yield Label(f"[b][u]{text}[/u][/b]", classes="Prompt")
         with Middle(classes="FitShort"):
             with Static(classes="QrCodeContainer"):
                 yield AsciiImage("assets/qr_code/qr_code.txt", "black", "white")
